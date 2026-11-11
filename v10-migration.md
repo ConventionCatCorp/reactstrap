@@ -128,9 +128,9 @@ deprecation tests went with them. New regression tests cover the React 19 bugs l
 - **CI** (`.github/workflows`):
   - `ci.yml` replaces `test.yml` + `coverage.yml`. It runs on Node from `.nvmrc`: lint → format:check → typecheck →
     cover → build → build:docs, then uploads to Coveralls.
-  - `release-please.yml` runs release-please v5 in manifest mode (`release-as: 10.0.0`) and publishes to GitHub Packages
-    with `GITHUB_TOKEN`.
-  - `docs.yml` deploys Storybook to GitHub Pages. This replaces `scripts/docs`, which pushed to the upstream
+  - No CI release: release-please is gone. Releases are published locally to GitHub Packages (`npm version`, then
+    `npm publish`); `prepublishOnly` runs typecheck, lint, tests and build first.
+  - `docs.yml` deploys Storybook to GitHub Pages on every push to `master`. This replaces `scripts/docs`, which pushed to the upstream
     `reactstrap.github.io` repo.
   - Actions: checkout v7, setup-node v7, upload-pages-artifact v5, deploy-pages v5.
   - Dependabot covers npm and actions weekly, grouped.
@@ -196,12 +196,10 @@ prettier 3.9, storybook 10.6 (+ react-vite, addon-docs, addon-links), react / re
      TooltipPopoverWrapper, UncontrolledDropdown.
    - They are the riskiest to rewrite, and `PopperContent` must stay a class for the `defaultProps` patch.
    - Converting them to hooks is a follow-up; it needs a replacement for that patch, e.g. a defaults context.
-3. **GitHub Packages vs `npm.concat.app`.**
-   - ConCat's `.npmrc` maps `@conventioncatcorp` to GitHub Packages, so this repo publishes there.
-   - But the umzug fork's repo publishes `@concat/umzug` to `npm.concat.app`.
-   - Confirm which registry is canonical.
-4. **Versioning.** `package.json` stays at 9.2.3. `release-please-config.json` sets `release-as: 10.0.0`; remove that
-   after the first release.
+3. **Registry:** GitHub Packages (`@conventioncatcorp`), same as ConCat's `.npmrc`. The umzug fork's repo still names
+   `@concat/umzug` on `npm.concat.app`, so that repo looks out of date.
+4. **ConCat `min-release-age=3`** stops npm from resolving versions younger than 3 days. Install a fresh release once
+   with `npm install --min-release-age=0` to update the lockfile; `npm ci` installs from the lockfile and is unaffected.
 5. **Kept oddities:**
    - `CarouselControl` renders `<a role="button">` without keyboard handling; Bootstrap 5 uses a `<button>`.
    - `CarouselItem`/`CarouselCaption` don't forward extra attributes.

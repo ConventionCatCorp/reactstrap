@@ -1,6 +1,6 @@
 {
   "name": "@conventioncatcorp/reactstrap",
-  "version": "9.2.3",
+  "version": "10.0.0",
   "description": "React 19 components for Bootstrap 5 (ConventionCatCorp fork of reactstrap)",
   "type": "module",
   "main": "./dist/index.js",
@@ -28,7 +28,7 @@
     "cover": "vitest run --coverage",
     "start": "storybook dev -p 8080",
     "build:docs": "storybook build -o build",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run typecheck && npm run lint && npm run test:ci && npm run build"
   },
   "prettier": {
     "singleQuote": true,

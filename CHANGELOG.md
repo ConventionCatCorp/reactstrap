@@ -1,3 +1,8 @@
+# 10.0.0 (2026-11-10)
+
+First release of `@conventioncatcorp/reactstrap`, the ConventionCatCorp fork. TypeScript, React 19 and Bootstrap 5
+only, with typed polymorphic `tag`. Breaking changes and the upgrade guide are in [v10-migration.md](v10-migration.md).
+
 # [9.0.0-8](https://github.com/reactstrap/reactstrap/compare/v9.0.0-7...v9.0.0-8) (2021-10-15)
 
 

@@ -115,7 +115,16 @@ npm run build       # dist/ (Vite lib build + tsc declarations)
 
 ## Releasing
 
-Release branches/versioning/notes will be automatically created and maintained by the [release-please](https://github.com/googleapis/release-please) github action. When you're ready to publish the release, just merge the release branch. The release will be created, the package is published to GitHub Packages, and the docs are deployed to GitHub Pages.
+Published from a local machine to GitHub Packages (`.npmrc` maps the `@conventioncatcorp` scope; your `~/.npmrc` needs
+a token with `write:packages` for `//npm.pkg.github.com/`):
+
+```sh
+npm version <major|minor|patch>   # bumps package.json, commits and tags
+npm publish                       # prepublishOnly runs typecheck, lint, tests and build
+git push --follow-tags
+```
+
+Storybook docs deploy to GitHub Pages on every push to `master`.
 
 ## In the wild
 
