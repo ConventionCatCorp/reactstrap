@@ -24,7 +24,3 @@ jobs:
       - run: npm run cover
       - run: npm run build
       - run: npm run build:docs
-      - uses: coverallsapp/github-action@v2
-        if: github.event_name == 'push'
-        with:
-          file: coverage/lcov.info
