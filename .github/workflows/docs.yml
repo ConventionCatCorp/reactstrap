@@ -1,18 +1,34 @@
-name: Manually Publish Docs
-on: workflow_dispatch
+name: Docs
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v2
-      # Setup .npmrc file to publish to npm
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: '12.x'
-          registry-url: 'https://registry.npmjs.org'
-      - name: Install dependencies
-        run: rm -rf node_modules && yarn install --frozen-lockfile
-      - name: Publish Docs
-        env:
-          GITHUB_TOKEN: ${{ secrets.REACTSTRAP_DOCS_GITHUB_TOKEN }}
-        run: ./scripts/docs
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci && npm run build:docs
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: build
+      - id: deployment
+        uses: actions/deploy-pages@v5

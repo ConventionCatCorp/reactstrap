@@ -1,7 +1,6 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-
 ---
 
 - components: `name`
@@ -34,6 +33,6 @@ paste error message with stacktrack here
 <!--
 Fork the link and update it to demonstrate your issue.
 https://stackblitz.com/edit/reactstrap?file=Example.js
- 
+
 and/or add the code which causes the issue directly here
  -->
