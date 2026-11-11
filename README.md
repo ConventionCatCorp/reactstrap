@@ -1,60 +1,39 @@
 [![reactstrap](https://cloud.githubusercontent.com/assets/399776/13906899/1de62f0c-ee9f-11e5-95c0-c515fee8e918.png)](https://reactstrap.github.io)
 
-[![NPM Version](https://img.shields.io/npm/v/reactstrap.svg?branch=master)](https://www.npmjs.com/package/reactstrap) [![Build Status](https://github.com/reactstrap/reactstrap/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/reactstrap/reactstrap) [![Coverage Status](https://coveralls.io/repos/github/reactstrap/reactstrap/badge.svg?branch=master)](https://coveralls.io/github/reactstrap/reactstrap?branch=master) [![License](https://img.shields.io/npm/l/reactstrap.svg)](https://github.com/reactstrap/reactstrap/blob/master/LICENSE)
+[![CI](https://github.com/ConventionCatCorp/reactstrap/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/ConventionCatCorp/reactstrap/actions/workflows/ci.yml) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-# reactstrap
+# @conventioncatcorp/reactstrap
 
-Stateless React Components for Bootstrap 5.
+Stateless React components for Bootstrap 5. A maintained fork of [reactstrap](https://github.com/reactstrap/reactstrap) (v9), published to GitHub Packages.
 
-If you're using Bootstrap 4, you'll need to use [Reactstrap v8](https://deploy-preview-2356--reactstrap.netlify.app/)
+```ini
+# .npmrc
+@conventioncatcorp:registry=https://npm.pkg.github.com
+```
 
 ## Getting Started
 
-Follow the [create-react-app instructions](https://create-react-app.dev/docs/getting-started) to get started and then follow the reactstrap version of [adding bootstrap](#adding-bootstrap).
+reactstrap 10 targets **React 19+** and **Bootstrap 5** and ships as ESM with bundled TypeScript types.
 
-### tl;dr
-
- ```
-npx create-react-app my-app
-cd my-app/
-npm start
-```
-or,  if npx (Node >= 6 and npm >= 5.2 ) not available 
-
-```
-npm install -g create-react-app
-
-create-react-app my-app
-cd my-app/
-npm start
-``` 
-
-Then open [http://localhost:3000/](http://localhost:3000/) to see your app. The initial structure of your app is setup. Next, let's [add reactstrap and bootstrap](#adding-bootstrap).
-
-### Adding Bootstrap
-
-Install reactstrap and Bootstrap from NPM. Reactstrap does not include Bootstrap CSS so this needs to be installed as well:
-
-```
-npm i bootstrap
-npm i reactstrap react react-dom
+```sh
+npm create vite@latest my-app -- --template react-ts
+cd my-app
+npm i @conventioncatcorp/reactstrap bootstrap
 ```
 
-Import Bootstrap CSS in the ```src/index.js``` file:
+Import Bootstrap CSS once (e.g. `src/main.tsx`):
 
-```js
+```ts
 import 'bootstrap/dist/css/bootstrap.css';
 ```
 
-Import required reactstrap components within ```src/App.js``` file or your custom component files:
+Then use components:
 
-```js
-import { Button } from 'reactstrap';
+```tsx
+import { Button } from '@conventioncatcorp/reactstrap';
 ```
 
-Now you are ready to use the imported reactstrap components within your component hierarchy defined in the render
-method. Here is an example [`App.js`](https://gist.github.com/Thomas-Smyth/006fd507a7295f17a8473451938f9935) redone
-using reactstrap.
+Upgrading from 9.x? See [v10-migration.md](v10-migration.md).
 
 ### Dependencies
 
@@ -62,93 +41,81 @@ using reactstrap.
 
 These libraries are not bundled with Reactstrap and required at runtime:
 
-  * [**react**](https://www.npmjs.com/package/react)
-  * [**react-dom**](https://www.npmjs.com/package/react-dom)
+- [**react**](https://www.npmjs.com/package/react) `>=19`
+- [**react-dom**](https://www.npmjs.com/package/react-dom) `>=19`
+- [**bootstrap**](https://getbootstrap.com/docs/5.3/) 5.x CSS (not a package dependency; you load it)
 
 ## About the Project
 
-This library contains React Bootstrap components that favor composition and control. The library does not depend on jQuery or Bootstrap javascript. However, [Poppers.js](https://popper.js.org/) via [react-popper](https://github.com/popperjs/react-popper) is relied upon for advanced positioning of content like Tooltips, Popovers, and auto-flipping Dropdowns.
+This library contains React Bootstrap components that favor composition and control. The library does not depend on jQuery or Bootstrap javascript. However, [Popper](https://popper.js.org/) (`@popperjs/core`) is relied upon for advanced positioning of content like Tooltips, Popovers, and auto-flipping Dropdowns.
 
 There are a few core concepts to understand in order to make the most out of this library.
 
 1. Your content is expected to be composed via props.children rather than using named props to pass in Components.
 
-    ```js
-    // Content passed in via props
-    const Example = (props) => {
-      return (
-        <p>This is a tooltip <TooltipTrigger tooltip={TooltipContent}>example</TooltipTrigger>!</p>
-      );
-    }
+   ```js
+   // Content passed in via props
+   const Example = (props) => {
+     return (
+       <p>
+         This is a tooltip{' '}
+         <TooltipTrigger tooltip={TooltipContent}>example</TooltipTrigger>!
+       </p>
+     );
+   };
 
-    // Content passed in as children (Preferred)
-    const PreferredExample = (props) => {
-      return (
-        <p>
-          This is a <a href="#" id="TooltipExample">tooltip</a> example.
-          <Tooltip target="TooltipExample">
-            <TooltipContent/>
-          </Tooltip>
-        </p>
-      );
-    }
-    ```
+   // Content passed in as children (Preferred)
+   const PreferredExample = (props) => {
+     return (
+       <p>
+         This is a{' '}
+         <a href="#" id="TooltipExample">
+           tooltip
+         </a>{' '}
+         example.
+         <Tooltip target="TooltipExample">
+           <TooltipContent />
+         </Tooltip>
+       </p>
+     );
+   };
+   ```
 
 2. Attributes in this library are used to pass in state, conveniently apply modifier classes, enable advanced functionality (like tether), or automatically include non-content based elements.
 
-    Examples:
+   Examples:
 
-    - `isOpen` - current state for items like dropdown, popover, tooltip
-    - `toggle` - callback for toggling `isOpen` in the controlling component
-    - `color` - applies color classes, ex: `<Button color="danger"/>`
-    - `size` - for controlling size classes. ex: `<Button size="sm"/>`
-    - `tag` - customize component output by passing in an element name or Component
-    - boolean based props (attributes) when possible for alternative style classes or `visually-hidden` content
+   - `isOpen` - current state for items like dropdown, popover, tooltip
+   - `toggle` - callback for toggling `isOpen` in the controlling component
+   - `color` - applies color classes, ex: `<Button color="danger"/>`
+   - `size` - for controlling size classes. ex: `<Button size="sm"/>`
+   - `tag` - customize component output by passing in an element name or Component
+   - boolean based props (attributes) when possible for alternative style classes or `visually-hidden` content
 
+## Documentation
 
-## [Documentation](https://reactstrap.github.io)
-
-https://reactstrap.github.io
-
-Documentation search is powered by [Algolia's DocSearch](https://community.algolia.com/docsearch/).
-
-## [CodeSandbox Examples](https://github.com/reactstrap/code-sandbox-examples)
-
-Here are some ready-to-go examples for [CodeSandbox](https://codesandbox.io/) that you can experiment with.
-
-https://github.com/reactstrap/code-sandbox-examples
+Storybook docs are deployed to this repo's GitHub Pages by `.github/workflows/docs.yml` (`npm start` locally).
+Upstream v9 docs: https://reactstrap.github.io
 
 ## [Contributing](CONTRIBUTING.md)
 
 ## Development
 
-Install dependencies:
+Requires Node 26 (`nvm use`) and npm.
 
 ```sh
-yarn install
-```
-
-Run examples at [http://localhost:8080/](http://localhost:8080/) with webpack dev server:
-
-```sh
-yarn start
-```
-
-Run tests & coverage report:
-
-```sh
-yarn cover
-```
-
-Watch tests:
-
-```sh
-yarn test
+npm ci              # install
+npm start           # Storybook docs at http://localhost:8080/
+npm test            # Vitest watch
+npm run cover       # tests + coverage
+npm run lint        # oxlint
+npm run typecheck   # tsc
+npm run build       # dist/ (Vite lib build + tsc declarations)
 ```
 
 ## Releasing
 
-Release branches/versioning/notes will be automatically created and maintained by the [release-please](https://github.com/googleapis/release-please) github action. When you're ready to publish the release, just merge the release branch. The release will be created, the new package will be published, and the updated docs will be deployed to https://reactstrap.github.io/.
+Release branches/versioning/notes will be automatically created and maintained by the [release-please](https://github.com/googleapis/release-please) github action. When you're ready to publish the release, just merge the release branch. The release will be created, the package is published to GitHub Packages, and the docs are deployed to GitHub Pages.
 
 ## In the wild
 
@@ -162,8 +129,8 @@ Organizations and projects using `reactstrap`
 - [DevExtreme React Grid](https://devexpress.github.io/devextreme-reactive/react/grid/) - It's a stateless data grid built on top of `reactstrap` with paging, sorting, filtering, grouping, selection, editing and virtual scrolling features.
 - [DevExtreme React Chart](https://devexpress.github.io/devextreme-reactive/react/chart/) - A chart built on top of `reactstrap` that visualizes data using a variety of series types, including bar, line, area, scatter, pie, and more.
 - [reactstrap-scrollspy](https://github.com/keidrun/reactstrap-scrollspy/) - [demo](https://keidrun.github.io/reactstrap-scrollspy/)
-- [formstrap](https://github.com/pedox/formstrap/) - [demo](https://pedox.github.io/formstrap/) - Let your `reactstrap` input component integrate seamlessly using `Formik` 
-- [Jimu UI](https://developers.arcgis.com/experience-builder/api-reference/jimu-ui/) - [demo](https://developers.arcgis.com/experience-builder/storybook/?path=/story/welcome--page) - The UI library for [ArcGIS Experience Builder](https://developers.arcgis.com/experience-builder/)  mapping platform.
+- [formstrap](https://github.com/pedox/formstrap/) - [demo](https://pedox.github.io/formstrap/) - Let your `reactstrap` input component integrate seamlessly using `Formik`
+- [Jimu UI](https://developers.arcgis.com/experience-builder/api-reference/jimu-ui/) - [demo](https://developers.arcgis.com/experience-builder/storybook/?path=/story/welcome--page) - The UI library for [ArcGIS Experience Builder](https://developers.arcgis.com/experience-builder/) mapping platform.
 
 Submit a PR to add to this list!
 

@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "es2023",
+    "lib": ["es2023", "dom", "dom.iterable"],
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": [
+      "vite/client",
+      "vitest/globals",
+      "@testing-library/jest-dom/vitest"
+    ],
+    "paths": {
+      "@conventioncatcorp/reactstrap": ["./src/index.ts"]
+    }
+  },
+  "include": ["src", "stories", ".storybook", "vite.config.ts"]
+}

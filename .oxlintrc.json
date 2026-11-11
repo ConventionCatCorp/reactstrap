@@ -1,0 +1,44 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "react", "jsx-a11y", "import", "unicorn", "vitest"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn"
+  },
+  "env": {
+    "browser": true
+  },
+  "ignorePatterns": [
+    "dist",
+    "build",
+    "coverage",
+    "storybook-static",
+    "src/__tests__/typings.tsx"
+  ],
+  "rules": {
+    "react/react-in-jsx-scope": "off",
+    "react/no-children-prop": "off",
+    "react/jsx-key": "error",
+    "react/rules-of-hooks": "error",
+    "react/exhaustive-deps": "warn",
+    "import/no-cycle": "error",
+    "typescript/no-explicit-any": "off",
+    "vitest/require-mock-type-parameters": "off",
+    "vitest/expect-expect": [
+      "error",
+      {
+        "assertFunctionNames": ["expect", "testFor*"]
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["src/__tests__/**", "src/testUtils.tsx"],
+      "rules": {
+        "jsx-a11y/anchor-is-valid": "off",
+        "jsx-a11y/anchor-has-content": "off",
+        "unicorn/consistent-function-scoping": "off"
+      }
+    }
+  ]
+}

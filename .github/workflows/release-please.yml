@@ -1,46 +1,33 @@
+name: Release
+
 on:
   push:
-    branches:
-      - master
-name: Release Bot
-jobs:
-  release-pr:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: GoogleCloudPlatform/release-please-action@v3
-        id: release-please
-        with:
-          release-type: node
-          package-name: "reactstrap"
-          changelog-types: '[{"type":"feat","section":"Features","hidden":false},{"type":"fix","section":"Bug Fixes","hidden":false},{"type":"chore","section":"Miscellaneous","hidden":true},{"type":"refactor","section":"Miscellaneous","hidden":false}]'
-          command: release-pr
+    branches: [master]
 
+permissions:
+  contents: write
+  pull-requests: write
+  packages: write
+
+jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: GoogleCloudPlatform/release-please-action@v3
+      - uses: googleapis/release-please-action@v5
         id: release
         with:
-          release-type: node
-          package-name: "reactstrap"
-          command: github-release
-      - uses: actions/checkout@v2
-        if: ${{ steps.release.outputs.release_created }}
-      - uses: actions/setup-node@v2
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+      - if: ${{ steps.release.outputs.release_created }}
+        uses: actions/checkout@v7
+      - if: ${{ steps.release.outputs.release_created }}
+        uses: actions/setup-node@v7
         with:
-          node-version: '16.x'
-          registry-url: 'https://registry.npmjs.org'
-        if: ${{ steps.release.outputs.release_created }}
-      - name: Install dependencies
-        run: rm -rf node_modules && yarn install --frozen-lockfile
-        if: ${{ steps.release.outputs.release_created }}
-      - name: Publish package
-        run: npm publish
+          node-version-file: .nvmrc
+          cache: npm
+          registry-url: https://npm.pkg.github.com
+          scope: '@conventioncatcorp'
+      - if: ${{ steps.release.outputs.release_created }}
+        run: npm ci && npm publish
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        if: ${{ steps.release.outputs.release_created }}
-      - name: Publish Docs
-        env:
-          GITHUB_TOKEN: ${{ secrets.REACTSTRAP_TOKEN }}
-        run: ./scripts/docs
-        if: ${{ steps.release.outputs.release_created }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

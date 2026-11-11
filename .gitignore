@@ -2,11 +2,7 @@
 node_modules
 /dist
 /build
-/lib
-/esm
-/es
+/storybook-static
 .DS_Store
 .idea
-.history
-npm-debug.log
-package-lock.json
+*.log

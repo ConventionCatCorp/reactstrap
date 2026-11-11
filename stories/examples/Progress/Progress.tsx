@@ -1,0 +1,28 @@
+import { Progress, type ProgressProps } from '@conventioncatcorp/reactstrap';
+import { colors } from '../options';
+
+function Example(args: ProgressProps) {
+  return <Progress {...args} />;
+}
+
+Example.args = {
+  value: 50,
+  animated: false,
+  striped: false,
+};
+
+Example.argTypes = {
+  color: {
+    control: { type: 'select' },
+    options: colors,
+  },
+  value: {
+    control: {
+      type: 'range',
+      min: 0,
+      max: 100,
+    },
+  },
+};
+
+export default Example;
