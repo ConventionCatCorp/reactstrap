@@ -1,10 +1,8 @@
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRef } from 'react';
-import { Popper } from '../popper';
+import { lastFloating } from '../testUtils';
 import TooltipPopoverWrapper from '../TooltipPopoverWrapper';
-
-vi.mock('../popper');
 
 describe('Tooltip', () => {
   let element: HTMLDivElement;
@@ -219,67 +217,42 @@ describe('Tooltip', () => {
     // TODO: RTL currently doesn't support touch events
   });
 
-  it('should pass down custom modifiers', async () => {
+  it('should pass down custom middleware, replacing same-named defaults', async () => {
+    const offset = { name: 'offset', fn: (s: { x: number; y: number }) => s };
+    const custom = { name: 'custom', fn: (s: { x: number; y: number }) => s };
     render(
       <TooltipPopoverWrapper
         isOpen
         target="target"
-        modifiers={[
-          {
-            name: 'offset',
-            options: {
-              offset: [2, 2],
-            },
-          },
-          {
-            name: 'preventOverflow',
-            options: {
-              boundary: 'viewport',
-            },
-          },
-        ]}
+        placement="top"
+        middleware={[offset, custom]}
       >
         Tooltip Content
       </TooltipPopoverWrapper>,
     );
 
-    expect(vi.mocked(Popper).mock.calls[0][0].modifiers).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          name: 'offset',
-          options: {
-            offset: [2, 2],
-          },
-        }),
-      ]),
-    );
-
-    expect(vi.mocked(Popper).mock.calls[0][0].modifiers).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          name: 'preventOverflow',
-          options: {
-            boundary: 'viewport',
-          },
-        }),
-      ]),
+    const mw = lastFloating().middleware!;
+    expect(mw.filter((m) => m && m.name === 'offset')).toEqual([offset]);
+    expect(mw).toContain(custom);
+    expect(mw.map((m) => m && m.name)).toEqual(
+      expect.arrayContaining(['flip', 'shift']),
     );
   });
 
-  describe('PopperContent', () => {
-    const PopperContent = vi.fn((props: any) =>
+  describe('FloatingContent', () => {
+    const FloatingContent = vi.fn((props: any) =>
       props.children({ update: () => {} }),
     );
     let Wrapper: typeof TooltipPopoverWrapper;
 
     beforeEach(async () => {
       vi.resetModules();
-      vi.doMock('../PopperContent', () => ({ default: PopperContent }));
+      vi.doMock('../FloatingContent', () => ({ default: FloatingContent }));
       Wrapper = (await import('../TooltipPopoverWrapper')).default;
     });
 
     afterEach(() => {
-      vi.doUnmock('../PopperContent');
+      vi.doUnmock('../FloatingContent');
     });
 
     it('should pass down cssModule', async () => {
@@ -293,9 +266,9 @@ describe('Tooltip', () => {
         </Wrapper>,
       );
 
-      expect(PopperContent).toHaveBeenCalledTimes(1);
+      expect(FloatingContent).toHaveBeenCalledTimes(1);
 
-      expect(PopperContent.mock.calls[0][0]).toEqual(
+      expect(FloatingContent.mock.calls[0][0]).toEqual(
         expect.objectContaining({
           cssModule: expect.objectContaining({
             a: 'b',
@@ -306,15 +279,13 @@ describe('Tooltip', () => {
 
     it('should pass down offset', async () => {
       render(
-        <Wrapper isOpen target="target" offset={[0, 12]}>
+        <Wrapper isOpen target="target" offset={12}>
           Tooltip content
         </Wrapper>,
       );
 
-      expect(PopperContent).toHaveBeenCalledTimes(1);
-      expect(PopperContent.mock.calls[0][0].offset).toEqual(
-        expect.arrayContaining([0, 12]),
-      );
+      expect(FloatingContent).toHaveBeenCalledTimes(1);
+      expect(FloatingContent.mock.calls[0][0].offset).toBe(12);
     });
 
     it('should not inject an offset when none is passed', async () => {
@@ -324,8 +295,8 @@ describe('Tooltip', () => {
         </Wrapper>,
       );
 
-      expect(PopperContent).toHaveBeenCalledTimes(1);
-      expect(PopperContent.mock.calls[0][0].offset).toBeUndefined();
+      expect(FloatingContent).toHaveBeenCalledTimes(1);
+      expect(FloatingContent.mock.calls[0][0].offset).toBeUndefined();
     });
 
     it('should pass down flip', async () => {
@@ -335,8 +306,8 @@ describe('Tooltip', () => {
         </Wrapper>,
       );
 
-      expect(PopperContent).toHaveBeenCalledTimes(1);
-      expect(PopperContent.mock.calls[0][0].flip).toBe(false);
+      expect(FloatingContent).toHaveBeenCalledTimes(1);
+      expect(FloatingContent.mock.calls[0][0].flip).toBe(false);
     });
 
     it('should handle inner target click and correct placement', async () => {
@@ -358,7 +329,7 @@ describe('Tooltip', () => {
         </Wrapper>,
       );
 
-      expect(PopperContent.mock.calls[0][0].target.id).toBe('target');
+      expect(FloatingContent.mock.calls[0][0].target.id).toBe('target');
     });
   });
 

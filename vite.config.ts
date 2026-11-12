@@ -30,7 +30,7 @@ export default defineConfig({
     coverage: {
       reporter: ['text', 'lcov'],
       include: ['src/**'],
-      exclude: ['src/__tests__/**', 'src/__mocks__/**', 'src/testUtils.tsx'],
+      exclude: ['src/__tests__/**', 'src/testUtils.tsx'],
     },
   },
 });

@@ -1,5 +1,6 @@
 import type { ComponentType, ReactNode } from 'react';
 import { render, screen } from '@testing-library/react';
+import { useFloating } from '@floating-ui/react-dom';
 import { DropdownContext, type DropdownContextValue } from './DropdownContext';
 
 type AnyComponent = ComponentType<any>;
@@ -56,3 +57,13 @@ export const customDropdownRender = (
       {ui}
     </DropdownContext.Provider>,
   );
+
+/** Options of the last `useFloating` call (spied in `__tests__/setup.ts`). */
+export const lastFloating = () =>
+  vi.mocked(useFloating).mock.calls.at(-1)?.[0] ?? {};
+
+/** The named middleware of the last `useFloating` call, with its options. */
+export function middleware(name: string) {
+  const m = lastFloating().middleware?.find((x) => x && x.name === name);
+  return m ? { options: (m.options as [unknown])[0] } : undefined;
+}

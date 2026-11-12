@@ -8,4 +8,10 @@ Object.assign(globalThis, {
   jest: { advanceTimersByTime: (ms: number) => vi.advanceTimersByTime(ms) },
 });
 
+// Real implementation, spied so specs can assert positioning options (see `lastFloating`).
+vi.mock('@floating-ui/react-dom', async (importOriginal) => {
+  const mod = await importOriginal<typeof import('@floating-ui/react-dom')>();
+  return { ...mod, useFloating: vi.fn(mod.useFloating) };
+});
+
 afterEach(() => cleanup());

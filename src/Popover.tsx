@@ -11,8 +11,8 @@ export interface PopoverProps extends TooltipPopoverWrapperProps {
   placementPrefix?: string;
   /** @default 'click' */
   trigger?: string;
-  /** @default [0, 8] */
-  offset?: [number, number];
+  /** @default 8 */
+  offset?: TooltipPopoverWrapperProps['offset'];
   /** The underlying `TooltipPopoverWrapper` instance. */
   ref?: Ref<TooltipPopoverWrapper>;
 }
@@ -21,9 +21,9 @@ function Popover({
   placement = 'right',
   placementPrefix = 'bs-popover',
   trigger = 'click',
-  offset = [0, 8],
+  offset = 8,
   arrowClassName,
-  popperClassName,
+  floatingClassName,
   innerClassName,
   ...props
 }: PopoverProps) {
@@ -35,7 +35,7 @@ function Popover({
       trigger={trigger}
       offset={offset}
       arrowClassName={classNames('popover-arrow', arrowClassName)}
-      popperClassName={classNames('popover', 'show', popperClassName)}
+      floatingClassName={classNames('popover', 'show', floatingClassName)}
       innerClassName={classNames('popover-inner', innerClassName)}
     />
   );

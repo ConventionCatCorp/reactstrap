@@ -25,8 +25,8 @@ Please see the Bootstrap [Migration Guide](https://getbootstrap.com/docs/5.3/mig
 ### Components with breaking changes:
 
 - Tooltip/Popover/DropdownMenu -
-  The `modifiers` prop will now conform to the new popper2 modifiers, which take an array instead of an object.
-  `offset` prop is now an array of 2 numbers that represent skidding and distance. See [popper docs](https://popper.js.org/docs/v2/modifiers/) for more details.
+  Since v11, positioning uses [Floating UI](https://floating-ui.com/): `modifiers` is replaced by `middleware`
+  and `offset` takes Floating UI [`OffsetOptions`](https://floating-ui.com/docs/offset).
 - ModalHeader/ToastHeader -
   Bootstrap 5 no longer supports custom close icons, so this feature was removed from ModalHeader and ToastHeader.
 - Dropdown/DropdownMenu -

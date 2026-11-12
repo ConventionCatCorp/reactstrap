@@ -1,16 +1,25 @@
 import {
   Component,
+  useCallback,
   type ContextType,
   type CSSProperties,
   type ElementType,
   type HTMLAttributes,
+  type MouseEvent,
   type ReactNode,
 } from 'react';
 import { createPortal } from 'react-dom';
 import classNames from 'classnames';
-import type { Placement, PositioningStrategy } from '@popperjs/core';
-import { Popper } from './popper';
-import type { PopperModifier } from './PopperContent';
+import {
+  autoUpdate,
+  flip as flipMiddleware,
+  limitShift,
+  shift,
+  useFloating,
+  type Placement,
+  type Strategy,
+} from '@floating-ui/react-dom';
+import { mergeMiddleware, type FloatingMiddleware } from './FloatingContent';
 import { DropdownContext, type DropdownDirection } from './DropdownContext';
 import {
   getTarget,
@@ -29,14 +38,18 @@ export interface DropdownMenuOwnProps {
   end?: boolean;
   /** Flips the menu to the opposite side if there is not enough space to fit */
   flip?: boolean;
-  modifiers?: PopperModifier[];
+  /**
+   * Extra Floating UI middleware, run after the defaults (`flip`, `shift`); a same-named one replaces
+   * that default in place, and a custom `offset` runs first.
+   */
+  middleware?: FloatingMiddleware[];
   cssModule?: CSSModule;
   /** Keep the menu mounted (and positioned) while closed. */
   persist?: boolean;
-  strategy?: PositioningStrategy;
+  strategy?: Strategy;
   /** Portal the menu into this element. */
   container?: Target;
-  /** Update popper layout when a click event comes up. This leverages event bubbling. */
+  /** Reposition the menu on click inside it (e.g. when an item changes its size). */
   updateOnSelect?: boolean;
 }
 
@@ -52,6 +65,68 @@ const directionPositionMap: Record<DropdownDirection, string> = {
   end: 'right',
   down: 'bottom',
 };
+
+type FloatingMenuProps = HTMLAttributes<HTMLElement> & {
+  tag: ElementType;
+  reference: Element | null;
+  placement: Placement;
+  flip: boolean;
+  middleware: FloatingMiddleware[];
+  strategy?: Strategy;
+  updateOnSelect?: boolean;
+  onMenuRef?: (el: HTMLElement | null) => void;
+};
+
+function FloatingMenu({
+  tag: Tag,
+  reference,
+  placement,
+  flip,
+  middleware,
+  strategy,
+  updateOnSelect,
+  onMenuRef,
+  style,
+  onClick,
+  ...attrs
+}: FloatingMenuProps) {
+  const floating = useFloating({
+    elements: { reference },
+    placement,
+    strategy,
+    middleware: mergeMiddleware(
+      [
+        ['offset', false],
+        ['flip', flip && flipMiddleware()],
+        ['shift', shift({ limiter: limitShift() })],
+      ],
+      middleware,
+    ),
+    whileElementsMounted: autoUpdate,
+  });
+  const { setFloating } = floating.refs;
+  const ref = useCallback(
+    (el: HTMLElement | null) => {
+      setFloating(el);
+      // Lets Dropdown ignore clicks inside the menu.
+      onMenuRef?.(el);
+    },
+    [setFloating, onMenuRef],
+  );
+
+  return (
+    <Tag
+      {...attrs}
+      ref={ref}
+      style={{ ...style, ...floating.floatingStyles }}
+      data-popper-placement={floating.placement}
+      onClick={(e: MouseEvent<HTMLElement>) => {
+        onClick?.(e);
+        if (updateOnSelect) floating.update();
+      }}
+    />
+  );
+}
 
 class DropdownMenu<T extends ElementType = 'div'> extends Component<
   DropdownMenuProps<T>
@@ -73,7 +148,7 @@ class DropdownMenu<T extends ElementType = 'div'> extends Component<
       end,
       tag: Tag = 'div',
       flip = true,
-      modifiers = [],
+      middleware = [],
       persist,
       strategy,
       container,
@@ -83,7 +158,7 @@ class DropdownMenu<T extends ElementType = 'div'> extends Component<
       tag?: ElementType;
       placement?: string;
     } & HTMLAttributes<HTMLElement>;
-    const { isOpen, inNavbar, direction, onMenuRef } = this.context;
+    const { isOpen, inNavbar, direction, onMenuRef, reference } = this.context;
 
     const classes = mapToCssModules(
       classNames(className, 'dropdown-menu', {
@@ -101,41 +176,28 @@ class DropdownMenu<T extends ElementType = 'div'> extends Component<
         ? { display: 'block', visibility: isOpen ? 'visible' : 'hidden' }
         : {};
 
-      const popper = (
-        <Popper
+      const menu = (
+        <FloatingMenu
+          tabIndex={-1}
+          role={this.getRole()}
+          {...attrs}
+          tag={Tag}
+          reference={reference ?? null}
           placement={`${position1}-${position2}` as Placement}
-          modifiers={[...modifiers, { name: 'flip', enabled: !!flip }]}
+          flip={flip}
+          middleware={middleware}
           strategy={strategy}
-        >
-          {({ ref, style, placement, update }) => {
-            const handleRef = (el: HTMLElement | null) => {
-              // Send the ref to popper
-              ref(el);
-              // Send the ref to the parent Dropdown so that clicks outside
-              // it will cause it to close
-              onMenuRef?.(el);
-            };
-
-            return (
-              <Tag
-                tabIndex={-1}
-                role={this.getRole()}
-                ref={handleRef}
-                {...attrs}
-                style={{ ...attrs.style, ...persistStyles, ...style }}
-                aria-hidden={!isOpen}
-                className={classes}
-                data-popper-placement={placement}
-                onClick={() => updateOnSelect && update()}
-              />
-            );
-          }}
-        </Popper>
+          updateOnSelect={updateOnSelect}
+          onMenuRef={onMenuRef}
+          style={{ ...attrs.style, ...persistStyles }}
+          aria-hidden={!isOpen}
+          className={classes}
+        />
       );
 
       return container
-        ? createPortal(popper, getTarget(container) as Element)
-        : popper;
+        ? createPortal(menu, getTarget(container) as Element)
+        : menu;
     }
 
     return (

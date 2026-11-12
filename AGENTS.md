@@ -5,7 +5,7 @@ Guidance for coding agents working in this repo.
 ## What this is
 
 `reactstrap` v10 (fork): stateless-ish React 19 components rendering Bootstrap 5 markup. No Bootstrap JS, no jQuery.
-Positioning via `@popperjs/core`. Bootstrap 6 is out of scope (separate migration).
+Positioning via Floating UI (`@floating-ui/react-dom`, `useFloating` called directly; no Popper). Bootstrap 6 is out of scope (separate migration).
 
 ## Stack
 
@@ -37,16 +37,17 @@ CI (`.github/workflows/ci.yml`) runs lint, format:check, typecheck, cover, build
 - `src/index.ts` — the public barrel. Anything not exported here is internal.
 - `src/utils.ts` — shared helpers and shared types (`CSSModule`, `Tag`, `Target`, `InnerRef`). Exposed as `Util`.
 - `src/Transition.tsx` — internal replacement for `react-transition-group` (`Transition`, `useNodeRef`).
-- `src/popper.tsx` — internal replacement for `react-popper` (`Manager`, `Reference`, `Popper`).
+- `src/FloatingContent.tsx` — positioned tooltip/popover body; `DropdownMenu` floats against the toggle from `DropdownContext.reference`.
 - `src/*Context.ts` — typed React contexts.
 - `src/__tests__/*.spec.tsx` — Vitest specs; `typings.tsx` and `polymorphic.*.tsx` are compile-only type tests.
-- `src/__mocks__/popper.tsx` — used via `vi.mock('../popper')`.
+- `src/__tests__/setup.ts` spies `useFloating` (real implementation); assert options with `lastFloating()` / `middleware(name)` from `src/testUtils.tsx`.
 - `stories/` — Storybook docs; `@conventioncatcorp/reactstrap` resolves to `src/index.ts` (tsconfig `paths` + Storybook alias).
 
 ## Conventions
 
 - No `prop-types`, no `defaultProps` on function components (React 19 ignores them). Defaults live in destructuring.
-  Class components may keep `static defaultProps`; `PopperContent.defaultProps` is public API (apps patch `offset`).
+  Class components may keep `static defaultProps`; `FloatingContent.defaultProps` is public API (apps patch `offset`).
+- `data-popper-placement` / `data-bs-popper` attributes are Bootstrap 5 CSS hooks, not Popper: keep them.
 - No index signatures on props. Components with `tag`: `XOwnProps` + `XProps<T = default tag> = XOwnProps &
 PolymorphicExtras<XOwnProps, T>` (spell `XOwnProps` out, or Storybook docgen loses the props table);
   classes use `PolymorphicClassExtras` and `declare props: XProps<T>`. Add ok/`@ts-expect-error` cases to

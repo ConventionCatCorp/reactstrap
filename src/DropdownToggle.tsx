@@ -8,7 +8,6 @@ import {
   type Ref,
 } from 'react';
 import classNames from 'classnames';
-import { Reference } from './popper';
 import { DropdownContext } from './DropdownContext';
 import {
   mapToCssModules,
@@ -50,6 +49,11 @@ type DropdownToggleImplProps = DropdownToggleOwnProps & {
   tag?: ElementType;
 } & HTMLAttributes<HTMLElement>;
 
+function setRef<V>(ref: Ref<V> | undefined, value: V) {
+  if (typeof ref === 'function') ref(value);
+  else if (ref) ref.current = value;
+}
+
 class DropdownToggle<T extends ElementType = DefaultTag> extends Component<
   DropdownToggleProps<T>
 > {
@@ -68,6 +72,21 @@ class DropdownToggle<T extends ElementType = DefaultTag> extends Component<
     this.context.toggle(e);
   };
 
+  private node: HTMLElement | null = null;
+
+  // Stable, so React only calls it on mount/unmount; `innerRef` swaps are handled in componentDidUpdate.
+  handleRef = (el: HTMLElement | null) => {
+    this.node = el;
+    setRef(this.props.innerRef, el);
+    this.context.onToggleRef?.(el);
+  };
+
+  override componentDidUpdate(prevProps: DropdownToggleProps<T>) {
+    if (prevProps.innerRef === this.props.innerRef) return;
+    setRef(prevProps.innerRef, null);
+    setRef(this.props.innerRef, this.node);
+  }
+
   getRole() {
     return this.context.menuRole || (this.props['aria-haspopup'] ?? true);
   }
@@ -81,7 +100,7 @@ class DropdownToggle<T extends ElementType = DefaultTag> extends Component<
       split,
       nav,
       tag,
-      innerRef,
+      innerRef: _innerRef,
       ...props
     } = this.props as DropdownToggleImplProps;
     const ariaLabel = props['aria-label'] || 'Toggle Dropdown';
@@ -112,33 +131,19 @@ class DropdownToggle<T extends ElementType = DefaultTag> extends Component<
       Tag = tag;
     }
 
-    const renderTag = ({ ref }: { ref?: (el: HTMLElement | null) => void }) => {
-      const handleRef = (el: HTMLElement | null) => {
-        ref?.(el);
-        this.context.onToggleRef?.(el);
-      };
-
-      return (
-        <Tag
-          {...props}
-          {...extra}
-          {...{ [typeof Tag === 'string' ? 'ref' : 'innerRef']: handleRef }}
-          className={classes}
-          onClick={this.onClick}
-          aria-expanded={this.context.isOpen}
-          aria-haspopup={this.getRole()}
-        >
-          {children}
-        </Tag>
-      );
-    };
-
-    // No Reference component if the component is in Navbar
-    if (this.context.inNavbar) {
-      return renderTag({ ref: this.context.onToggleRef });
-    }
-
-    return <Reference innerRef={innerRef}>{renderTag}</Reference>;
+    return (
+      <Tag
+        {...props}
+        {...extra}
+        {...{ [typeof Tag === 'string' ? 'ref' : 'innerRef']: this.handleRef }}
+        className={classes}
+        onClick={this.onClick}
+        aria-expanded={this.context.isOpen}
+        aria-haspopup={this.getRole()}
+      >
+        {children}
+      </Tag>
+    );
   }
 }
 

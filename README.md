@@ -47,7 +47,7 @@ These libraries are not bundled with Reactstrap and required at runtime:
 
 ## About the Project
 
-This library contains React Bootstrap components that favor composition and control. The library does not depend on jQuery or Bootstrap javascript. However, [Popper](https://popper.js.org/) (`@popperjs/core`) is relied upon for advanced positioning of content like Tooltips, Popovers, and auto-flipping Dropdowns.
+This library contains React Bootstrap components that favor composition and control. The library does not depend on jQuery or Bootstrap javascript. However, [Floating UI](https://floating-ui.com/) (`@floating-ui/react-dom`) is relied upon for advanced positioning of content like Tooltips, Popovers, and auto-flipping Dropdowns.
 
 There are a few core concepts to understand in order to make the most out of this library.
 
@@ -94,7 +94,7 @@ There are a few core concepts to understand in order to make the most out of thi
 
 ## Documentation
 
-Storybook docs are deployed to this repo's GitHub Pages by `.github/workflows/docs.yml` (`npm start` locally).
+Storybook docs are not hosted; run them locally with `npm start`.
 Upstream v9 docs: https://reactstrap.github.io
 
 ## [Contributing](CONTRIBUTING.md)
@@ -123,8 +123,6 @@ npm version <major|minor|patch>   # bumps package.json, commits and tags
 npm publish                       # prepublishOnly runs typecheck, lint, tests and build
 git push --follow-tags
 ```
-
-Storybook docs deploy to GitHub Pages on every push to `master`.
 
 ## In the wild
 

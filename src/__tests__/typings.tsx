@@ -4268,7 +4268,7 @@ function Example() {
       <UncontrolledTooltip
         placement="right"
         target="UncontrolledTooltipExample"
-        popperClassName="popperClassName"
+        floatingClassName="floatingClassName"
       >
         Hello world!
       </UncontrolledTooltip>
@@ -4975,7 +4975,7 @@ function Example126() {
       <UncontrolledPopover
         placement="bottom"
         target="UncontrolledPopover"
-        popperClassName="popperClassName"
+        floatingClassName="floatingClassName"
       >
         <PopoverHeader>Popover Title</PopoverHeader>
         <PopoverBody>Lorem ipsum dolor sit amet</PopoverBody>

@@ -12,6 +12,8 @@ export interface DropdownContextValue {
   /** DropdownMenu reports its DOM node, so outside clicks close the dropdown. */
   onMenuRef?: (el: HTMLElement | null) => void;
   onToggleRef?: (el: HTMLElement | null) => void;
+  /** The toggle's DOM node; DropdownMenu floats against it. */
+  reference?: HTMLElement | null;
   menuRole?: 'listbox' | 'menu' | boolean;
 }
 

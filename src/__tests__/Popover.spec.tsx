@@ -1,11 +1,7 @@
 import { render, screen } from '@testing-library/react';
-import { Popper } from '../popper';
-import PopperContent from '../PopperContent';
+import { lastFloating, middleware } from '../testUtils';
+import FloatingContent from '../FloatingContent';
 import Popover from '../Popover';
-
-vi.mock('../popper');
-
-const lastPopperProps = () => vi.mocked(Popper).mock.calls.at(-1)![0];
 
 describe('Popover', () => {
   let element: HTMLDivElement;
@@ -19,9 +15,9 @@ describe('Popover', () => {
     document.body.removeChild(element);
   });
 
-  it('should apply popperClassName to popper component', () => {
+  it('should apply floatingClassName to the floating element', () => {
     render(
-      <Popover target="popover-target" popperClassName="boba-was-here" isOpen>
+      <Popover target="popover-target" floatingClassName="boba-was-here" isOpen>
         Bo-Katan Kryze
       </Popover>,
     );
@@ -43,47 +39,45 @@ describe('Popover', () => {
 
   // Regression: React 19 ignores defaultProps on function components.
   describe('defaults', () => {
-    it('should pass offset [0, 8] to popper', () => {
+    it('should default offset to 8', () => {
       render(
         <Popover target="popover-target" isOpen>
           Content
         </Popover>,
       );
 
-      expect(lastPopperProps().modifiers).toContainEqual({
-        name: 'offset',
-        options: { offset: [0, 8] },
-      });
+      expect(middleware('offset')?.options).toEqual(8);
     });
 
     it('should let an explicit offset win', () => {
       render(
-        <Popover target="popover-target" isOpen offset={[1, 2]}>
+        <Popover
+          target="popover-target"
+          isOpen
+          offset={{ mainAxis: 2, crossAxis: 1 }}
+        >
           Content
         </Popover>,
       );
 
-      expect(lastPopperProps().modifiers).toContainEqual({
-        name: 'offset',
-        options: { offset: [1, 2] },
+      expect(middleware('offset')?.options).toEqual({
+        mainAxis: 2,
+        crossAxis: 1,
       });
     });
 
-    it('should keep offset [0, 8] when PopperContent.defaultProps.offset is patched', () => {
-      const original = PopperContent.defaultProps.offset;
-      PopperContent.defaultProps.offset = [0, 5];
+    it('should keep offset 8 when FloatingContent.defaultProps.offset is patched', () => {
+      const original = FloatingContent.defaultProps.offset;
+      FloatingContent.defaultProps.offset = 5;
       try {
         render(
           <Popover target="popover-target" isOpen>
             Content
           </Popover>,
         );
-        expect(lastPopperProps().modifiers).toContainEqual({
-          name: 'offset',
-          options: { offset: [0, 8] },
-        });
+        expect(middleware('offset')?.options).toEqual(8);
       } finally {
-        PopperContent.defaultProps.offset = original;
+        FloatingContent.defaultProps.offset = original;
       }
     });
 
@@ -94,7 +88,7 @@ describe('Popover', () => {
         </Popover>,
       );
 
-      expect(lastPopperProps().placement).toBe('right');
+      expect(lastFloating().placement).toBe('right');
       expect(screen.getByText('Content').parentElement).toHaveClass(
         'bs-popover-auto',
       );

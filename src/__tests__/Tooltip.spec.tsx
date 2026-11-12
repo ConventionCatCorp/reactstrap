@@ -1,11 +1,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import { Popper } from '../popper';
-import PopperContent from '../PopperContent';
+import { lastFloating, middleware } from '../testUtils';
+import FloatingContent from '../FloatingContent';
 import Tooltip from '../Tooltip';
-
-vi.mock('../popper');
-
-const lastPopperProps = () => vi.mocked(Popper).mock.calls.at(-1)![0];
 
 describe('Tooltip', () => {
   let element: HTMLDivElement;
@@ -19,9 +15,9 @@ describe('Tooltip', () => {
     document.body.removeChild(element);
   });
 
-  it('should apply popperClassName to popper component', () => {
+  it('should apply floatingClassName to the floating element', () => {
     render(
-      <Tooltip target="tooltip-target" popperClassName="boba-was-here" isOpen>
+      <Tooltip target="tooltip-target" floatingClassName="boba-was-here" isOpen>
         Bo-Katan Kryze
       </Tooltip>,
     );
@@ -57,7 +53,7 @@ describe('Tooltip', () => {
         </Tooltip>,
       );
 
-      expect(lastPopperProps().placement).toBe('top');
+      expect(lastFloating().placement).toBe('top');
       expect(screen.getByText('Content').parentElement).toHaveClass(
         'bs-tooltip-auto',
       );
@@ -97,34 +93,30 @@ describe('Tooltip', () => {
       expect(toggle).toHaveBeenCalledTimes(1);
     });
 
-    it('should use the PopperContent default offset', () => {
+    it('should use the FloatingContent default offset', () => {
       render(
         <Tooltip target="tooltip-target" isOpen>
           Content
         </Tooltip>,
       );
 
-      expect(lastPopperProps().modifiers).toContainEqual({
-        name: 'offset',
-        options: { offset: PopperContent.defaultProps.offset },
-      });
+      expect(middleware('offset')?.options).toEqual(
+        FloatingContent.defaultProps.offset,
+      );
     });
 
-    it('should honor a patched PopperContent.defaultProps.offset', () => {
-      const original = PopperContent.defaultProps.offset;
-      PopperContent.defaultProps.offset = [0, 5];
+    it('should honor a patched FloatingContent.defaultProps.offset', () => {
+      const original = FloatingContent.defaultProps.offset;
+      FloatingContent.defaultProps.offset = 5;
       try {
         render(
           <Tooltip target="tooltip-target" isOpen>
             Content
           </Tooltip>,
         );
-        expect(lastPopperProps().modifiers).toContainEqual({
-          name: 'offset',
-          options: { offset: [0, 5] },
-        });
+        expect(middleware('offset')?.options).toEqual(5);
       } finally {
-        PopperContent.defaultProps.offset = original;
+        FloatingContent.defaultProps.offset = original;
       }
     });
   });
