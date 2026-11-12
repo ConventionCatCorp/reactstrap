@@ -104,6 +104,7 @@ export { default as CardTitle, type CardTitleProps } from './CardTitle';
 export {
   default as FloatingContent,
   type FloatingContentProps,
+  type FloatingMiddleware,
   type FloatingPlacement,
 } from './FloatingContent';
 export { default as Popover, type PopoverProps } from './Popover';

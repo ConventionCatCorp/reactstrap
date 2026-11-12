@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react';
-import { useFloating } from '@floating-ui/react-dom';
+import { offset, useFloating } from '@floating-ui/react-dom';
 import type { DropdownContextValue } from '../DropdownContext';
 import { DropdownMenu } from '..';
 import { customDropdownRender, lastFloating, middleware } from '../testUtils';
@@ -150,6 +150,19 @@ describe('DropdownMenu', () => {
     expect(lastFloating().middleware).toContain(custom);
   });
 
+  it('should run a custom offset before flip and shift', async () => {
+    contextProps.isOpen = true;
+    const custom = offset(2);
+    customDropdownRender(
+      <DropdownMenu middleware={[custom]}>Ello world</DropdownMenu>,
+      contextProps,
+    );
+
+    const mw = lastFloating().middleware!;
+    expect(mw.map((m) => m && m.name)).toEqual(['offset', 'flip', 'shift']);
+    expect(mw[0]).toBe(custom);
+  });
+
   it('should float against the toggle from context', async () => {
     contextProps.isOpen = true;
     const reference = document.createElement('button');
@@ -164,15 +177,26 @@ describe('DropdownMenu', () => {
   it('should keep a custom onClick and reposition with updateOnSelect', async () => {
     contextProps.isOpen = true;
     const onClick = vi.fn();
-    customDropdownRender(
-      <DropdownMenu updateOnSelect onClick={onClick}>
-        Ello world
-      </DropdownMenu>,
-      contextProps,
-    );
+    const update = vi.fn();
+    const actual = vi.mocked(useFloating).getMockImplementation()!;
+    vi.mocked(useFloating).mockImplementation((o) => ({
+      ...actual(o),
+      update,
+    }));
+    try {
+      customDropdownRender(
+        <DropdownMenu updateOnSelect onClick={onClick}>
+          Ello world
+        </DropdownMenu>,
+        contextProps,
+      );
+      screen.getByText(/ello world/i).click();
+    } finally {
+      vi.mocked(useFloating).mockImplementation(actual);
+    }
 
-    screen.getByText(/ello world/i).click();
     expect(onClick).toHaveBeenCalledTimes(1);
+    expect(update).toHaveBeenCalledTimes(1);
   });
 
   it('should position using fixed mode', async () => {

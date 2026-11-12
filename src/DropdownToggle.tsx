@@ -49,6 +49,11 @@ type DropdownToggleImplProps = DropdownToggleOwnProps & {
   tag?: ElementType;
 } & HTMLAttributes<HTMLElement>;
 
+function setRef<V>(ref: Ref<V> | undefined, value: V) {
+  if (typeof ref === 'function') ref(value);
+  else if (ref) ref.current = value;
+}
+
 class DropdownToggle<T extends ElementType = DefaultTag> extends Component<
   DropdownToggleProps<T>
 > {
@@ -67,13 +72,20 @@ class DropdownToggle<T extends ElementType = DefaultTag> extends Component<
     this.context.toggle(e);
   };
 
-  // Stable, so React only calls it on mount/unmount.
+  private node: HTMLElement | null = null;
+
+  // Stable, so React only calls it on mount/unmount; `innerRef` swaps are handled in componentDidUpdate.
   handleRef = (el: HTMLElement | null) => {
-    const { innerRef } = this.props;
-    if (typeof innerRef === 'function') innerRef(el);
-    else if (innerRef) innerRef.current = el;
+    this.node = el;
+    setRef(this.props.innerRef, el);
     this.context.onToggleRef?.(el);
   };
+
+  override componentDidUpdate(prevProps: DropdownToggleProps<T>) {
+    if (prevProps.innerRef === this.props.innerRef) return;
+    setRef(prevProps.innerRef, null);
+    setRef(this.props.innerRef, this.node);
+  }
 
   getRole() {
     return this.context.menuRole || (this.props['aria-haspopup'] ?? true);

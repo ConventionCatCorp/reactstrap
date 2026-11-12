@@ -12,6 +12,7 @@ import {
   autoPlacement,
   autoUpdate,
   flip as flipMiddleware,
+  limitShift,
   offset as offsetMiddleware,
   shift,
   useFloating,
@@ -31,6 +32,25 @@ import {
 } from './utils';
 import Fade, { type FadeProps } from './Fade';
 
+/** Floating UI middleware; falsy entries are skipped (`[cond && hide()]`). */
+export type FloatingMiddleware = Middleware | false | null | undefined;
+
+/**
+ * Default `[name, middleware]` slots in order, each replaced in place by a same-named
+ * user middleware (Floating UI runs middleware in array order); other user middleware follows.
+ */
+export function mergeMiddleware(
+  slots: [name: string, middleware: FloatingMiddleware][],
+  extra: FloatingMiddleware[],
+): Middleware[] {
+  const user = extra.filter((m): m is Middleware => !!m);
+  const byName = new Map(user.map((m) => [m.name, m]));
+  const merged = slots
+    .map(([name, m]) => byName.get(name) ?? m)
+    .filter((m): m is Middleware => !!m);
+  return [...merged, ...user.filter((m) => !merged.includes(m))];
+}
+
 /** Floating UI placement, plus `auto*` (best fitting side, via `autoPlacement`). */
 export type FloatingPlacement = Placement | 'auto' | `auto-${Alignment}`;
 
@@ -43,7 +63,7 @@ export interface FloatingContentDefaultProps {
   offset: OffsetOptions;
   flip: boolean;
   container: Target;
-  middleware: Middleware[];
+  middleware: FloatingMiddleware[];
   onClosed: () => void;
   fade: boolean;
   transition: FadeProps;
@@ -65,14 +85,17 @@ export interface FloatingContentOwnProps {
   cssModule?: CSSModule;
   /** Distance from the target (`offset` middleware). */
   offset?: OffsetOptions;
-  /** Placements to try when `flip`ping. */
+  /** Placements to try when `flip`ping (ignored for `auto*` placements). */
   fallbackPlacements?: Placement[];
   /** Flip to the opposite side when it would overflow. */
   flip?: boolean;
-  /** Extra Floating UI middleware; same-named ones replace the defaults (`offset`, `flip`, `shift`). */
-  middleware?: Middleware[];
+  /**
+   * Extra Floating UI middleware, run after the defaults (`offset`, `flip` or `autoPlacement`,
+   * `shift`, `arrow`); a same-named one replaces that default in place.
+   */
+  middleware?: FloatingMiddleware[];
   strategy?: Strategy;
-  /** Clipping boundary for `shift`. */
+  /** Clipping boundary for `shift` (which keeps the element tethered to the target). */
   boundary?: Boundary;
   onClosed?: () => void;
   /** Animate with Fade. */
@@ -124,14 +147,6 @@ function Floating({
   const [arrowElement, setArrowElement] = useState<HTMLElement | null>(null);
   const [side, alignment] = placement.split('-') as [string, Alignment?];
   const auto = side === 'auto';
-  const names = new Set(middleware.map((m) => m.name));
-  const defaults = [
-    offsetMiddleware(offset),
-    auto
-      ? autoPlacement({ alignment })
-      : flip && flipMiddleware({ fallbackPlacements }),
-    shift({ boundary }),
-  ].filter((m): m is Middleware => !!m && !names.has(m.name));
 
   const {
     refs,
@@ -144,11 +159,24 @@ function Floating({
     elements: { reference },
     placement: auto ? undefined : (placement as Placement),
     strategy,
-    middleware: [
-      ...defaults,
-      ...middleware,
-      arrowElement && arrow({ element: arrowElement }),
-    ],
+    middleware: mergeMiddleware(
+      [
+        ['offset', offsetMiddleware(offset)],
+        auto
+          ? [
+              'autoPlacement',
+              autoPlacement(
+                // Like Popper's `auto-start`: keep the requested alignment.
+                alignment ? { alignment, autoAlignment: false } : undefined,
+              ),
+            ]
+          : ['flip', flip && flipMiddleware({ fallbackPlacements })],
+        // The limiter keeps it attached to the target (Popper's `tether`).
+        ['shift', shift({ boundary, limiter: limitShift() })],
+        ['arrow', arrowElement && arrow({ element: arrowElement })],
+      ],
+      middleware,
+    ),
     whileElementsMounted: autoUpdate,
   });
   const { setFloating } = refs;

@@ -6,14 +6,20 @@ Positioning moves from `@popperjs/core` (unmaintained since 2023) to [Floating U
 - `PopperContent` → `FloatingContent` (`PopperContentProps` → `FloatingContentProps`). Patch defaults with
   `FloatingContent.defaultProps.offset = 5`.
 - `popperClassName` → `floatingClassName` (Tooltip, Popover, FloatingContent).
-- `modifiers` → `middleware` (Floating UI `Middleware[]`; same-named entries replace the defaults `offset`, `flip`,
-  `shift`).
+- `modifiers` → `middleware` (Floating UI middleware, run after the defaults; falsy entries are skipped). A
+  same-named entry replaces that default in place: `offset`, `flip`/`autoPlacement`, `shift`, `arrow` for
+  Tooltip/Popover/FloatingContent; `offset` (none by default), `flip`, `shift` for DropdownMenu. Popper's
+  `preventOverflow` is now `shift`.
 - `offset: [skidding, distance]` → Floating UI `OffsetOptions`: `[0, 8]` becomes `8`, `[x, y]` becomes
   `{ mainAxis: y, crossAxis: x }`. Popover defaults to `8`.
 - `boundariesElement` → `boundary` (Floating UI `Boundary`, default `'clippingAncestors'`).
-- `placement` / `strategy` use Floating UI types; `auto`, `auto-start` and `auto-end` still work (via `autoPlacement`).
+- `placement` / `strategy` use Floating UI types; `auto`, `auto-start` and `auto-end` still work (via `autoPlacement`,
+  which ignores `flip` and `fallbackPlacements`).
+- Repositions on element resizes and layout shifts too (`autoUpdate`), not only scroll and window resize. `shift` keeps
+  the element tethered to its target, like Popper's `preventOverflow`.
 - Removed: `data-popper-reference-hidden` attribute, `Util.PopperPlacements`.
-- `DropdownToggle` `innerRef` now also works inside a navbar.
+- Fixes: `DropdownToggle` `innerRef` now works inside a navbar (and when swapped); a positioned `DropdownMenu` no
+  longer drops its `onClick`.
 
 # 10.0.0 (2026-11-10)
 

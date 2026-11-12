@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
+import { offset } from '@floating-ui/react-dom';
 import { FloatingContent } from '..';
 import { lastFloating, middleware } from '../testUtils';
 
@@ -116,10 +117,66 @@ describe('FloatingContent', () => {
       'offset',
       'flip',
       'shift',
-      'custom',
       'arrow',
+      'custom',
     ]);
     expect(lastFloating().middleware).toContain(shift);
+  });
+
+  it('should run a custom offset in the default slot, before flip and shift', () => {
+    const custom = offset(4);
+    render(
+      <FloatingContent
+        target="target"
+        isOpen
+        container="inline"
+        placement="top"
+        middleware={[custom, false, null, undefined]}
+      >
+        Yo!
+      </FloatingContent>,
+    );
+
+    const mw = lastFloating().middleware!;
+    expect(mw.map((m) => m && m.name)).toEqual([
+      'offset',
+      'flip',
+      'shift',
+      'arrow',
+    ]);
+    expect(mw[0]).toBe(custom);
+  });
+
+  it('should tether shift to the target', () => {
+    render(
+      <FloatingContent target="target" isOpen container="inline">
+        Yo!
+      </FloatingContent>,
+    );
+
+    expect(middleware('shift')?.options).toMatchObject({
+      limiter: { fn: expect.any(Function) },
+    });
+  });
+
+  it('should position the arrow and report the computed placement', async () => {
+    vi.useRealTimers();
+    const { container } = render(
+      <FloatingContent target="target" isOpen container="inline">
+        Yo!
+      </FloatingContent>,
+    );
+
+    const floating = container.querySelector('[data-popper-placement]')!;
+    expect(floating).toHaveAttribute('data-popper-placement', 'auto');
+    await act(async () => {});
+
+    expect(floating.getAttribute('data-popper-placement')).toMatch(
+      /^(top|right|bottom|left)$/,
+    );
+    const arrowStyle = (container.querySelector('.arrow') as HTMLElement).style;
+    expect(arrowStyle.position).toBe('absolute');
+    expect(arrowStyle.left || arrowStyle.top).toMatch(/px$/);
   });
 
   it('should use autoPlacement instead of flip for auto placements', () => {
@@ -137,6 +194,7 @@ describe('FloatingContent', () => {
     expect(lastFloating().placement).toBeUndefined();
     expect(middleware('autoPlacement')?.options).toEqual({
       alignment: 'start',
+      autoAlignment: false,
     });
     expect(middleware('flip')).toBeUndefined();
   });
@@ -177,7 +235,7 @@ describe('FloatingContent', () => {
     expect(middleware('flip')?.options).toEqual({
       fallbackPlacements: ['bottom'],
     });
-    expect(middleware('shift')?.options).toEqual({ boundary });
+    expect(middleware('shift')?.options).toMatchObject({ boundary });
     expect(lastFloating().strategy).toBe('fixed');
   });
 

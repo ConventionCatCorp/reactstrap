@@ -13,12 +13,13 @@ import classNames from 'classnames';
 import {
   autoUpdate,
   flip as flipMiddleware,
+  limitShift,
   shift,
   useFloating,
-  type Middleware,
   type Placement,
   type Strategy,
 } from '@floating-ui/react-dom';
+import { mergeMiddleware, type FloatingMiddleware } from './FloatingContent';
 import { DropdownContext, type DropdownDirection } from './DropdownContext';
 import {
   getTarget,
@@ -37,8 +38,11 @@ export interface DropdownMenuOwnProps {
   end?: boolean;
   /** Flips the menu to the opposite side if there is not enough space to fit */
   flip?: boolean;
-  /** Extra Floating UI middleware; same-named ones replace the defaults (`flip`, `shift`). */
-  middleware?: Middleware[];
+  /**
+   * Extra Floating UI middleware, run after the defaults (`flip`, `shift`); a same-named one replaces
+   * that default in place, and a custom `offset` runs first.
+   */
+  middleware?: FloatingMiddleware[];
   cssModule?: CSSModule;
   /** Keep the menu mounted (and positioned) while closed. */
   persist?: boolean;
@@ -67,7 +71,7 @@ type FloatingMenuProps = HTMLAttributes<HTMLElement> & {
   reference: Element | null;
   placement: Placement;
   flip: boolean;
-  middleware: Middleware[];
+  middleware: FloatingMiddleware[];
   strategy?: Strategy;
   updateOnSelect?: boolean;
   onMenuRef?: (el: HTMLElement | null) => void;
@@ -86,17 +90,18 @@ function FloatingMenu({
   onClick,
   ...attrs
 }: FloatingMenuProps) {
-  const names = new Set(middleware.map((m) => m.name));
   const floating = useFloating({
     elements: { reference },
     placement,
     strategy,
-    middleware: [
-      ...[flip && flipMiddleware(), shift()].filter(
-        (m): m is Middleware => !!m && !names.has(m.name),
-      ),
-      ...middleware,
-    ],
+    middleware: mergeMiddleware(
+      [
+        ['offset', false],
+        ['flip', flip && flipMiddleware()],
+        ['shift', shift({ limiter: limitShift() })],
+      ],
+      middleware,
+    ),
     whileElementsMounted: autoUpdate,
   });
   const { setFloating } = floating.refs;

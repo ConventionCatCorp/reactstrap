@@ -9,13 +9,11 @@ import {
   type RefObject,
   type SyntheticEvent,
 } from 'react';
-import type {
-  Boundary,
-  Middleware,
-  OffsetOptions,
-  Strategy,
-} from '@floating-ui/react-dom';
-import FloatingContent, { type FloatingPlacement } from './FloatingContent';
+import type { Boundary, OffsetOptions, Strategy } from '@floating-ui/react-dom';
+import FloatingContent, {
+  type FloatingMiddleware,
+  type FloatingPlacement,
+} from './FloatingContent';
 import {
   getTarget,
   mapToCssModules,
@@ -56,8 +54,8 @@ export interface TooltipPopoverWrapperProps extends Omit<
   placementPrefix?: string;
   /** Show/hide delay in ms (default `{ show: 0, hide: 50 }`). */
   delay?: TooltipPopoverDelay;
-  /** Extra Floating UI middleware; same-named ones replace the defaults. */
-  middleware?: Middleware[];
+  /** Extra Floating UI middleware; see `FloatingContent`. */
+  middleware?: FloatingMiddleware[];
   strategy?: Strategy;
   /** Distance from the target; falls back to `FloatingContent.defaultProps.offset`. */
   offset?: OffsetOptions;

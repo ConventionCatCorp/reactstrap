@@ -1,3 +1,4 @@
+import { createRef } from 'react';
 import {
   act,
   createEvent,
@@ -9,7 +10,7 @@ import userEvent from '@testing-library/user-event';
 import type { Mock } from 'vitest';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from '..';
 import { keyCodes } from '../utils';
-import { testForChildrenInComponent } from '../testUtils';
+import { lastFloating, testForChildrenInComponent } from '../testUtils';
 
 describe('Dropdown', () => {
   let user: ReturnType<typeof userEvent.setup>;
@@ -1203,5 +1204,40 @@ describe('Dropdown', () => {
       expect(screen.getByRole('option')).toBeInTheDocument();
       expect(screen.getByRole('listbox')).toBeInTheDocument();
     });
+  });
+
+  describe('floating menu', () => {
+    it('should float the menu against the toggle', () => {
+      render(
+        <Dropdown isOpen toggle={() => {}}>
+          <DropdownToggle>Toggle</DropdownToggle>
+          <DropdownMenu>Menu</DropdownMenu>
+        </Dropdown>,
+      );
+
+      expect(lastFloating().elements?.reference).toBe(
+        screen.getByText('Toggle'),
+      );
+    });
+
+    it.each([false, true])(
+      'should set and swap the toggle innerRef (inNavbar: %s)',
+      (inNavbar) => {
+        const a = createRef<HTMLElement>();
+        const b = createRef<HTMLElement>();
+        const ui = (ref: typeof a) => (
+          <Dropdown isOpen inNavbar={inNavbar} toggle={() => {}}>
+            <DropdownToggle innerRef={ref}>Toggle</DropdownToggle>
+            <DropdownMenu>Menu</DropdownMenu>
+          </Dropdown>
+        );
+        const { rerender } = render(ui(a));
+        expect(a.current).toBe(screen.getByText('Toggle'));
+
+        rerender(ui(b));
+        expect(a.current).toBeNull();
+        expect(b.current).toBe(screen.getByText('Toggle'));
+      },
+    );
   });
 });
