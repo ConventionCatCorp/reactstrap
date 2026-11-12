@@ -1,4 +1,4 @@
-# 11.0.0 (unreleased)
+# 11.0.0 (2026-11-11)
 
 Positioning moves from `@popperjs/core` (unmaintained since 2023) to [Floating UI](https://floating-ui.com/)
 (`@floating-ui/react-dom`). Breaking:
