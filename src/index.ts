@@ -102,9 +102,10 @@ export {
 export { default as CardText, type CardTextProps } from './CardText';
 export { default as CardTitle, type CardTitleProps } from './CardTitle';
 export {
-  default as PopperContent,
-  type PopperContentProps,
-} from './PopperContent';
+  default as FloatingContent,
+  type FloatingContentProps,
+  type FloatingPlacement,
+} from './FloatingContent';
 export { default as Popover, type PopoverProps } from './Popover';
 export {
   default as UncontrolledPopover,

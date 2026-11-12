@@ -1,12 +1,8 @@
 import { screen } from '@testing-library/react';
-import { Popper } from '../popper';
+import { useFloating } from '@floating-ui/react-dom';
 import type { DropdownContextValue } from '../DropdownContext';
 import { DropdownMenu } from '..';
-import { customDropdownRender } from '../testUtils';
-
-vi.mock('../popper');
-
-const PopperMock = vi.mocked(Popper);
+import { customDropdownRender, lastFloating, middleware } from '../testUtils';
 
 describe('DropdownMenu', () => {
   const contextProps = {
@@ -68,7 +64,7 @@ describe('DropdownMenu', () => {
     expect(screen.getByText(/ello world/i)).not.toHaveClass(
       'dropdown-menu-end',
     );
-    expect(PopperMock.mock.calls[0][0].placement).toBe('bottom-start');
+    expect(lastFloating().placement).toBe('bottom-start');
   });
 
   it('should render down when direction is unknown on the context', async () => {
@@ -100,7 +96,6 @@ describe('DropdownMenu', () => {
       'data-popper-placement',
       'top-start',
     );
-    // expect(wrapper.find(Popper).prop('placement')).toBe('top-start');
   });
 
   it('should render left when direction is "start" on the context', async () => {
@@ -111,7 +106,6 @@ describe('DropdownMenu', () => {
       'data-popper-placement',
       'left-start',
     );
-    // expect(wrapper.find(Popper).prop('placement')).toBe('left-start');
   });
 
   it('should render right when direction is "end" on the context', async () => {
@@ -122,31 +116,63 @@ describe('DropdownMenu', () => {
       'data-popper-placement',
       'right-start',
     );
-    // expect(wrapper.find(Popper).prop('placement')).toBe('right-start');
   });
 
-  it('should not disable flip modifier by default', async () => {
+  it('should flip and shift by default', async () => {
     contextProps.isOpen = true;
     customDropdownRender(<DropdownMenu>Ello world</DropdownMenu>, contextProps);
 
-    expect(PopperMock.mock.calls[0][0].modifiers![0]).toMatchObject({
-      name: 'flip',
-      enabled: true,
-    });
+    expect(middleware('flip')).toBeDefined();
+    expect(middleware('shift')).toBeDefined();
   });
 
-  it('should disable flip modifier when flip is false', async () => {
+  it('should not flip when flip is false', async () => {
     contextProps.isOpen = true;
     customDropdownRender(
       <DropdownMenu flip={false}>Ello world</DropdownMenu>,
       contextProps,
     );
 
-    expect(PopperMock.mock.calls.length).toBe(1);
-    expect(PopperMock.mock.calls[0][0].modifiers![0]).toMatchObject({
-      name: 'flip',
-      enabled: false,
+    expect(middleware('flip')).toBeUndefined();
+    expect(middleware('shift')).toBeDefined();
+  });
+
+  it('should let custom middleware replace same-named defaults', async () => {
+    contextProps.isOpen = true;
+    const custom = { name: 'shift', fn: (s: { x: number; y: number }) => s };
+    customDropdownRender(
+      <DropdownMenu middleware={[custom]}>Ello world</DropdownMenu>,
+      contextProps,
+    );
+
+    const names = lastFloating().middleware?.map((m) => m && m.name);
+    expect(names).toEqual(['flip', 'shift']);
+    expect(lastFloating().middleware).toContain(custom);
+  });
+
+  it('should float against the toggle from context', async () => {
+    contextProps.isOpen = true;
+    const reference = document.createElement('button');
+    customDropdownRender(<DropdownMenu>Ello world</DropdownMenu>, {
+      ...contextProps,
+      reference,
     });
+
+    expect(lastFloating().elements?.reference).toBe(reference);
+  });
+
+  it('should keep a custom onClick and reposition with updateOnSelect', async () => {
+    contextProps.isOpen = true;
+    const onClick = vi.fn();
+    customDropdownRender(
+      <DropdownMenu updateOnSelect onClick={onClick}>
+        Ello world
+      </DropdownMenu>,
+      contextProps,
+    );
+
+    screen.getByText(/ello world/i).click();
+    expect(onClick).toHaveBeenCalledTimes(1);
   });
 
   it('should position using fixed mode', async () => {
@@ -155,16 +181,16 @@ describe('DropdownMenu', () => {
       <DropdownMenu strategy="fixed">Ello world</DropdownMenu>,
       contextProps,
     );
-    expect(PopperMock.mock.calls[0][0].strategy).toBe('fixed');
+    expect(lastFloating().strategy).toBe('fixed');
   });
 
-  it('should not render Popper when isOpen is false', async () => {
+  it('should not position the menu when isOpen is false', async () => {
     customDropdownRender(
       <DropdownMenu end>Ello world</DropdownMenu>,
       contextProps,
     );
 
-    expect(PopperMock).not.toHaveBeenCalled();
+    expect(useFloating).not.toHaveBeenCalled();
   });
 
   it('should render custom tag', async () => {

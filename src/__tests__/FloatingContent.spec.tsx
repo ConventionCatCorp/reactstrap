@@ -1,10 +1,8 @@
 import { render, screen } from '@testing-library/react';
-import { Popper } from '../popper';
-import { PopperContent } from '..';
+import { FloatingContent } from '..';
+import { lastFloating, middleware } from '../testUtils';
 
-vi.mock('../popper');
-
-describe('PopperContent', () => {
+describe('FloatingContent', () => {
   let element: HTMLDivElement;
 
   beforeEach(() => {
@@ -23,16 +21,16 @@ describe('PopperContent', () => {
   });
 
   it('should NOT render children when isOpen is false', () => {
-    render(<PopperContent target="target">Yo!</PopperContent>);
+    render(<FloatingContent target="target">Yo!</FloatingContent>);
 
     expect(screen.queryByText('Yo!')).not.toBeInTheDocument();
   });
 
   it('should render children when isOpen is true and container is inline', () => {
     render(
-      <PopperContent target="target" isOpen>
+      <FloatingContent target="target" isOpen>
         Yo!
-      </PopperContent>,
+      </FloatingContent>,
     );
 
     expect(screen.queryByText('Yo!')).toBeInTheDocument();
@@ -42,32 +40,32 @@ describe('PopperContent', () => {
     const targetElement = element.querySelector('#target')!;
 
     render(
-      <PopperContent target={targetElement} isOpen container="inline">
+      <FloatingContent target={targetElement} isOpen container="inline">
         Yo!
-      </PopperContent>,
+      </FloatingContent>,
     );
 
     expect(screen.queryByText('Yo!')).toBeInTheDocument();
   });
 
-  it('should render an Arrow in the Popper when isOpen is true and container is inline', () => {
+  it('should render an arrow when isOpen is true and container is inline', () => {
     const { container } = render(
-      <PopperContent
+      <FloatingContent
         target="target"
         isOpen
         container="inline"
         arrowClassName="custom-arrow"
       >
         Yo!
-      </PopperContent>,
+      </FloatingContent>,
     );
 
     expect(container.querySelector('.arrow.custom-arrow')).toBeInTheDocument();
   });
 
-  it('should NOT render an Arrow in the Popper when "hideArrow" is truthy', () => {
+  it('should NOT render an arrow when "hideArrow" is truthy', () => {
     const { container } = render(
-      <PopperContent
+      <FloatingContent
         target="target"
         isOpen
         container="inline"
@@ -75,7 +73,7 @@ describe('PopperContent', () => {
         hideArrow
       >
         Yo!
-      </PopperContent>,
+      </FloatingContent>,
     );
 
     expect(
@@ -83,9 +81,9 @@ describe('PopperContent', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('should pass additional classNames to the popper', () => {
+  it('should pass additional classNames to the wrapper', () => {
     render(
-      <PopperContent
+      <FloatingContent
         className="extra"
         target="target"
         isOpen
@@ -93,63 +91,101 @@ describe('PopperContent', () => {
         data-testid="rick"
       >
         Yo!
-      </PopperContent>,
+      </FloatingContent>,
     );
 
     expect(screen.getByTestId('rick')).toHaveClass('extra');
   });
 
-  it('should allow custom modifiers and even allow overriding of default modifiers', () => {
+  it('should allow custom middleware and let it replace same-named defaults', () => {
+    const shift = { name: 'shift', fn: (st: { x: number; y: number }) => st };
+    const custom = { name: 'custom', fn: (st: { x: number; y: number }) => st };
     render(
-      <PopperContent
-        className="extra"
+      <FloatingContent
         target="target"
         isOpen
         container="inline"
-        modifiers={[
-          {
-            name: 'offset',
-            options: {
-              offset: [2, 2],
-            },
-          },
-          {
-            name: 'preventOverflow',
-            options: {
-              boundary: 'viewport',
-            },
-          },
-        ]}
+        placement="top"
+        middleware={[shift, custom]}
       >
         Yo!
-      </PopperContent>,
+      </FloatingContent>,
     );
 
-    expect(vi.mocked(Popper).mock.calls[0][0]).toEqual(
-      expect.objectContaining({
-        modifiers: expect.arrayContaining([
-          expect.objectContaining({
-            name: 'offset',
-            options: {
-              offset: [2, 2],
-            },
-          }),
-          expect.objectContaining({
-            name: 'preventOverflow',
-            options: {
-              boundary: 'viewport',
-            },
-          }),
-        ]),
-      }),
+    expect(lastFloating().middleware?.map((m) => m && m.name)).toEqual([
+      'offset',
+      'flip',
+      'shift',
+      'custom',
+      'arrow',
+    ]);
+    expect(lastFloating().middleware).toContain(shift);
+  });
+
+  it('should use autoPlacement instead of flip for auto placements', () => {
+    render(
+      <FloatingContent
+        placement="auto-start"
+        target="target"
+        isOpen
+        container="inline"
+      >
+        Yo!
+      </FloatingContent>,
     );
+
+    expect(lastFloating().placement).toBeUndefined();
+    expect(middleware('autoPlacement')?.options).toEqual({
+      alignment: 'start',
+    });
+    expect(middleware('flip')).toBeUndefined();
+  });
+
+  it('should not flip when flip is false', () => {
+    render(
+      <FloatingContent
+        placement="top"
+        flip={false}
+        fallbackPlacements={['bottom']}
+        target="target"
+        isOpen
+        container="inline"
+      >
+        Yo!
+      </FloatingContent>,
+    );
+
+    expect(middleware('flip')).toBeUndefined();
+  });
+
+  it('should pass fallbackPlacements, boundary and strategy', () => {
+    const boundary = document.createElement('div');
+    render(
+      <FloatingContent
+        placement="top"
+        fallbackPlacements={['bottom']}
+        boundary={boundary}
+        strategy="fixed"
+        target="target"
+        isOpen
+        container="inline"
+      >
+        Yo!
+      </FloatingContent>,
+    );
+
+    expect(middleware('flip')?.options).toEqual({
+      fallbackPlacements: ['bottom'],
+    });
+    expect(middleware('shift')?.options).toEqual({ boundary });
+    expect(lastFloating().strategy).toBe('fixed');
   });
 
   it('should have data-popper-placement of auto by default', () => {
     const { container } = render(
-      <PopperContent target="target" isOpen container="inline">
+      <FloatingContent target="target" isOpen container="inline">
         Yo!
-      </PopperContent>,
+      </FloatingContent>,
     );
 
     expect(
@@ -159,9 +195,14 @@ describe('PopperContent', () => {
 
   it('should override data-popper-placement', () => {
     const { container } = render(
-      <PopperContent placement="top" target="target" isOpen container="inline">
+      <FloatingContent
+        placement="top"
+        target="target"
+        isOpen
+        container="inline"
+      >
         Yo!
-      </PopperContent>,
+      </FloatingContent>,
     );
 
     expect(
@@ -175,14 +216,14 @@ describe('PopperContent', () => {
 
   it('should allow for a placement prefix', () => {
     render(
-      <PopperContent
+      <FloatingContent
         placementPrefix="dropdown"
         target="target"
         isOpen
         container="inline"
       >
         Yo!
-      </PopperContent>,
+      </FloatingContent>,
     );
 
     expect(screen.getByText('Yo!')).toHaveClass('dropdown-auto');
@@ -190,7 +231,7 @@ describe('PopperContent', () => {
 
   it('should allow for a placement prefix with custom placement', () => {
     const { container } = render(
-      <PopperContent
+      <FloatingContent
         placementPrefix="dropdown"
         placement="top"
         target="target"
@@ -198,7 +239,7 @@ describe('PopperContent', () => {
         container="inline"
       >
         Yo!
-      </PopperContent>,
+      </FloatingContent>,
     );
 
     expect(screen.getByText('Yo!')).toHaveClass('dropdown-auto');
@@ -207,9 +248,9 @@ describe('PopperContent', () => {
     ).toBeInTheDocument();
   });
 
-  it('should render custom tag for the popper', () => {
+  it('should render custom tag for the wrapper', () => {
     render(
-      <PopperContent
+      <FloatingContent
         tag="main"
         target="target"
         isOpen
@@ -217,7 +258,7 @@ describe('PopperContent', () => {
         data-testid="morty"
       >
         Yo!
-      </PopperContent>,
+      </FloatingContent>,
     );
 
     expect(screen.getByTestId('morty').tagName.toLowerCase()).toBe('main');
@@ -226,72 +267,64 @@ describe('PopperContent', () => {
   it('should allow a function to be used as children', () => {
     const renderChildren = vi.fn();
     render(
-      <PopperContent target="target" isOpen>
+      <FloatingContent target="target" isOpen>
         {renderChildren}
-      </PopperContent>,
+      </FloatingContent>,
     );
     expect(renderChildren).toHaveBeenCalled();
   });
 
   it('should render children properly when children is a function', () => {
     render(
-      <PopperContent target="target" isOpen>
+      <FloatingContent target="target" isOpen>
         {() => 'Yo!'}
-      </PopperContent>,
+      </FloatingContent>,
     );
 
     expect(screen.queryByText('Yo!')).toBeInTheDocument();
   });
 
   describe('defaultProps', () => {
-    const modifiers = () => vi.mocked(Popper).mock.calls.at(-1)![0].modifiers;
-
-    it('should default offset to [0, 0]', () => {
+    it('should default offset to 0', () => {
       render(
-        <PopperContent target="target" isOpen container="inline">
+        <FloatingContent target="target" isOpen container="inline">
           Yo!
-        </PopperContent>,
+        </FloatingContent>,
       );
 
-      expect(modifiers()).toContainEqual({
-        name: 'offset',
-        options: { offset: [0, 0] },
-      });
+      expect(middleware('offset')?.options).toEqual(0);
     });
 
-    it('should honor a patched PopperContent.defaultProps.offset', () => {
-      const original = PopperContent.defaultProps.offset;
-      PopperContent.defaultProps.offset = [0, 5];
+    it('should honor a patched FloatingContent.defaultProps.offset', () => {
+      const original = FloatingContent.defaultProps.offset;
+      FloatingContent.defaultProps.offset = 5;
       try {
         render(
-          <PopperContent target="target" isOpen container="inline">
+          <FloatingContent target="target" isOpen container="inline">
             Yo!
-          </PopperContent>,
+          </FloatingContent>,
         );
-        expect(modifiers()).toContainEqual({
-          name: 'offset',
-          options: { offset: [0, 5] },
-        });
+        expect(middleware('offset')?.options).toEqual(5);
       } finally {
-        PopperContent.defaultProps.offset = original;
+        FloatingContent.defaultProps.offset = original;
       }
     });
 
     it('should let an explicit offset win over defaultProps', () => {
       render(
-        <PopperContent
+        <FloatingContent
           target="target"
           isOpen
           container="inline"
-          offset={[3, 4]}
+          offset={{ mainAxis: 4, crossAxis: 3 }}
         >
           Yo!
-        </PopperContent>,
+        </FloatingContent>,
       );
 
-      expect(modifiers()).toContainEqual({
-        name: 'offset',
-        options: { offset: [3, 4] },
+      expect(middleware('offset')?.options).toEqual({
+        mainAxis: 4,
+        crossAxis: 3,
       });
     });
   });

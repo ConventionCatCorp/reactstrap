@@ -11,8 +11,6 @@ import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from '..';
 import { keyCodes } from '../utils';
 import { testForChildrenInComponent } from '../testUtils';
 
-vi.mock('../popper');
-
 describe('Dropdown', () => {
   let user: ReturnType<typeof userEvent.setup>;
 
@@ -1116,7 +1114,7 @@ describe('Dropdown', () => {
   });
 
   describe('Dropdown in navbar', () => {
-    it('should open without popper with inNavbar prop', async () => {
+    it('should open statically with inNavbar prop', async () => {
       render(
         <Dropdown nav inNavbar>
           <DropdownToggle caret nav>

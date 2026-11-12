@@ -1,5 +1,7 @@
 # v10 migration report
 
+> v11 replaced `@popperjs/core` with Floating UI; `PopperContent` is now `FloatingContent`. See CHANGELOG 11.0.0.
+
 `reactstrap@9.2.3` → `@conventioncatcorp/reactstrap@10.0.0`: a TypeScript, React 19 and Bootstrap 5 renovation of the fork.
 Branch: `v10`.
 

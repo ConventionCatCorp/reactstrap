@@ -15,7 +15,6 @@ import {
   type SyntheticEvent,
 } from 'react';
 import classNames from 'classnames';
-import { Manager } from './popper';
 import {
   DropdownContext,
   type DropdownContextValue,
@@ -52,7 +51,7 @@ export interface DropdownOwnProps {
   cssModule?: CSSModule;
   /** Shorthand for `direction="up"` (only when direction is `down`). */
   dropup?: boolean;
-  /** Render the menu without popper (static positioning). */
+  /** Render the menu statically (no floating positioning). */
   inNavbar?: boolean;
   /** Add `.active` when an item of the second child (the menu) is active. */
   setActiveFromChild?: boolean;
@@ -107,13 +106,15 @@ function keyCodeOf(e: { which: number; key?: string }): number {
 }
 
 class Dropdown<T extends ElementType = 'div'> extends Component<
-  DropdownProps<T>
+  DropdownProps<T>,
+  { reference: HTMLElement | null }
 > {
   // Not `Readonly<P>`: lets JSX infer `T` from a string `tag` (else it widens to `ElementType`).
   declare props: DropdownProps<T>;
   static override contextType = InputGroupContext;
   declare context: ContextType<typeof InputGroupContext>;
 
+  override state = { reference: null as HTMLElement | null };
   containerRef = createRef<HTMLElement>();
   menuRef = createRef<HTMLElement>();
   toggleRef = createRef<HTMLElement>();
@@ -137,6 +138,7 @@ class Dropdown<T extends ElementType = 'div'> extends Component<
 
   handleToggleRef = (el: HTMLElement | null) => {
     this.toggleRef.current = el;
+    if (el !== this.state.reference) this.setState({ reference: el });
   };
 
   handleDocumentClick = (e: Event) => {
@@ -259,6 +261,7 @@ class Dropdown<T extends ElementType = 'div'> extends Component<
       // Called by DropdownMenu with its DOM node
       onMenuRef: this.handleMenuRef,
       onToggleRef: this.handleToggleRef,
+      reference: this.state.reference,
       menuRole: this.props.menuRole,
     };
   }
@@ -355,29 +358,25 @@ class Dropdown<T extends ElementType = 'div'> extends Component<
     if (this.context.insideInputGroup) {
       return (
         <DropdownContext.Provider value={this.getContextValue()}>
-          <Manager>
-            {Children.map(this.props.children, (child) =>
-              cloneElement(child as ReactElement<any>, {
-                onKeyDown: this.handleKeyDown,
-              }),
-            )}
-          </Manager>
+          {Children.map(this.props.children, (child) =>
+            cloneElement(child as ReactElement<any>, {
+              onKeyDown: this.handleKeyDown,
+            }),
+          )}
         </DropdownContext.Provider>
       );
     }
 
     return (
       <DropdownContext.Provider value={this.getContextValue()}>
-        <Manager>
-          <Tag
-            {...attrs}
-            {...{
-              [typeof Tag === 'string' ? 'ref' : 'innerRef']: this.containerRef,
-            }}
-            onKeyDown={this.handleKeyDown}
-            className={classes}
-          />
-        </Manager>
+        <Tag
+          {...attrs}
+          {...{
+            [typeof Tag === 'string' ? 'ref' : 'innerRef']: this.containerRef,
+          }}
+          onKeyDown={this.handleKeyDown}
+          className={classes}
+        />
       </DropdownContext.Provider>
     );
   }

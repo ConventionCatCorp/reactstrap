@@ -15,8 +15,6 @@ import {
 } from '..';
 import { testForDefaultClass } from '../testUtils';
 
-vi.mock('../popper');
-
 let user: ReturnType<typeof userEvent.setup>;
 
 beforeEach(() => {

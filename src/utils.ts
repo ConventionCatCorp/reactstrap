@@ -188,24 +188,6 @@ export const keyCodes = {
   p: 80,
 } as const;
 
-export const PopperPlacements = [
-  'auto-start',
-  'auto',
-  'auto-end',
-  'top-start',
-  'top',
-  'top-end',
-  'right-start',
-  'right',
-  'right-end',
-  'bottom-end',
-  'bottom',
-  'bottom-start',
-  'left-end',
-  'left',
-  'left-start',
-] as const;
-
 export const canUseDOM =
   typeof window !== 'undefined' && !!window.document?.createElement;
 

@@ -8,7 +8,6 @@ import {
   type Ref,
 } from 'react';
 import classNames from 'classnames';
-import { Reference } from './popper';
 import { DropdownContext } from './DropdownContext';
 import {
   mapToCssModules,
@@ -68,6 +67,14 @@ class DropdownToggle<T extends ElementType = DefaultTag> extends Component<
     this.context.toggle(e);
   };
 
+  // Stable, so React only calls it on mount/unmount.
+  handleRef = (el: HTMLElement | null) => {
+    const { innerRef } = this.props;
+    if (typeof innerRef === 'function') innerRef(el);
+    else if (innerRef) innerRef.current = el;
+    this.context.onToggleRef?.(el);
+  };
+
   getRole() {
     return this.context.menuRole || (this.props['aria-haspopup'] ?? true);
   }
@@ -81,7 +88,7 @@ class DropdownToggle<T extends ElementType = DefaultTag> extends Component<
       split,
       nav,
       tag,
-      innerRef,
+      innerRef: _innerRef,
       ...props
     } = this.props as DropdownToggleImplProps;
     const ariaLabel = props['aria-label'] || 'Toggle Dropdown';
@@ -112,33 +119,19 @@ class DropdownToggle<T extends ElementType = DefaultTag> extends Component<
       Tag = tag;
     }
 
-    const renderTag = ({ ref }: { ref?: (el: HTMLElement | null) => void }) => {
-      const handleRef = (el: HTMLElement | null) => {
-        ref?.(el);
-        this.context.onToggleRef?.(el);
-      };
-
-      return (
-        <Tag
-          {...props}
-          {...extra}
-          {...{ [typeof Tag === 'string' ? 'ref' : 'innerRef']: handleRef }}
-          className={classes}
-          onClick={this.onClick}
-          aria-expanded={this.context.isOpen}
-          aria-haspopup={this.getRole()}
-        >
-          {children}
-        </Tag>
-      );
-    };
-
-    // No Reference component if the component is in Navbar
-    if (this.context.inNavbar) {
-      return renderTag({ ref: this.context.onToggleRef });
-    }
-
-    return <Reference innerRef={innerRef}>{renderTag}</Reference>;
+    return (
+      <Tag
+        {...props}
+        {...extra}
+        {...{ [typeof Tag === 'string' ? 'ref' : 'innerRef']: this.handleRef }}
+        className={classes}
+        onClick={this.onClick}
+        aria-expanded={this.context.isOpen}
+        aria-haspopup={this.getRole()}
+      >
+        {children}
+      </Tag>
+    );
   }
 }
 

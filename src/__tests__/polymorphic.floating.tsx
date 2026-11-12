@@ -1,4 +1,4 @@
-// Compile-only: polymorphic `tag` typing (popper, dropdown, carousel groups).
+// Compile-only: polymorphic `tag` typing (floating, dropdown, carousel groups).
 import type { ReactNode } from 'react';
 import {
   ButtonDropdown,
@@ -9,7 +9,7 @@ import {
   DropdownToggle,
   PopoverBody,
   PopoverHeader,
-  PopperContent,
+  FloatingContent,
   UncontrolledButtonDropdown,
   UncontrolledDropdown,
   type PopoverProps,
@@ -45,12 +45,12 @@ export const ok = (
     <UncontrolledButtonDropdown defaultOpen />
     <PopoverBody tag={Link} to="/" />
     <PopoverHeader tag="h5" id="x" />
-    <PopperContent tag="span" target="x" id="x">
+    <FloatingContent tag="span" target="x" id="x">
       x
-    </PopperContent>
-    <PopperContent tag={Link} to="/" target="x">
+    </FloatingContent>
+    <FloatingContent tag={Link} to="/" target="x">
       x
-    </PopperContent>
+    </FloatingContent>
     <CarouselItem tag="li" ref={(el: HTMLElement | null) => void el} />
   </>
 );
@@ -78,9 +78,9 @@ export const bad = (
     {/* @ts-expect-error unknown prop */}
     <PopoverBody colour="x" />
     {/* @ts-expect-error typo on Link prop */}
-    <PopperContent tag={Link} too="/" target="x">
+    <FloatingContent tag={Link} too="/" target="x">
       x
-    </PopperContent>
+    </FloatingContent>
   </>
 );
 
@@ -95,8 +95,8 @@ export const badStringTag = (
     {/* @ts-expect-error typo on DOM prop */}
     <UncontrolledDropdown tag="li" onClik={() => {}} />
     {/* @ts-expect-error typo on DOM prop */}
-    <PopperContent tag="span" target="x" onClik={() => {}}>
+    <FloatingContent tag="span" target="x" onClik={() => {}}>
       x
-    </PopperContent>
+    </FloatingContent>
   </>
 );

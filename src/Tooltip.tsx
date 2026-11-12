@@ -23,7 +23,7 @@ function Tooltip({
   placementPrefix = 'bs-tooltip',
   trigger = 'hover focus',
   arrowClassName,
-  popperClassName,
+  floatingClassName,
   innerClassName,
   ...props
 }: TooltipProps) {
@@ -35,7 +35,7 @@ function Tooltip({
       placementPrefix={placementPrefix}
       trigger={trigger}
       arrowClassName={classNames('tooltip-arrow', arrowClassName)}
-      popperClassName={classNames('tooltip', 'show', popperClassName)}
+      floatingClassName={classNames('tooltip', 'show', floatingClassName)}
       innerClassName={classNames('tooltip-inner', innerClassName)}
     />
   );

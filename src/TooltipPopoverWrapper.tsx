@@ -9,8 +9,13 @@ import {
   type RefObject,
   type SyntheticEvent,
 } from 'react';
-import type { Boundary, Placement, PositioningStrategy } from '@popperjs/core';
-import PopperContent, { type PopperModifier } from './PopperContent';
+import type {
+  Boundary,
+  Middleware,
+  OffsetOptions,
+  Strategy,
+} from '@floating-ui/react-dom';
+import FloatingContent, { type FloatingPlacement } from './FloatingContent';
 import {
   getTarget,
   mapToCssModules,
@@ -35,26 +40,27 @@ export interface TooltipPopoverWrapperProps extends Omit<
   /** Ignore triggers and `toggle` calls. */
   disabled?: boolean;
   hideArrow?: boolean;
-  /** `preventOverflow` boundary. */
-  boundariesElement?: Boundary | string;
-  placement?: Placement;
+  /** Clipping boundary for `shift`. */
+  boundary?: Boundary;
+  placement?: FloatingPlacement;
   className?: string;
   innerClassName?: string;
   arrowClassName?: string;
-  popperClassName?: string;
+  floatingClassName?: string;
   cssModule?: CSSModule;
   /** Called to open or close the popup. */
   toggle?: MouseEventHandler<any> | (() => void);
   /** Hide when the pointer leaves the target even if it moves onto the popup. */
   autohide?: boolean;
-  /** Adds `${placementPrefix}-auto` to the popper. */
+  /** Adds `${placementPrefix}-auto` to the floating element. */
   placementPrefix?: string;
   /** Show/hide delay in ms (default `{ show: 0, hide: 50 }`). */
   delay?: TooltipPopoverDelay;
-  modifiers?: PopperModifier[];
-  strategy?: PositioningStrategy;
-  /** Popper `offset` modifier; falls back to `PopperContent.defaultProps.offset`. */
-  offset?: [number, number];
+  /** Extra Floating UI middleware; same-named ones replace the defaults. */
+  middleware?: Middleware[];
+  strategy?: Strategy;
+  /** Distance from the target; falls back to `FloatingContent.defaultProps.offset`. */
+  offset?: OffsetOptions;
   innerRef?: Ref<HTMLElement>;
   /** Space separated: `click`, `hover`, `focus`, `legacy` or `manual`. */
   trigger?: string;
@@ -78,17 +84,17 @@ const ownKeys = [
   'isOpen',
   'disabled',
   'hideArrow',
-  'boundariesElement',
+  'boundary',
   'className',
   'innerClassName',
   'arrowClassName',
-  'popperClassName',
+  'floatingClassName',
   'cssModule',
   'toggle',
   'autohide',
   'placementPrefix',
   'delay',
-  'modifiers',
+  'middleware',
   'strategy',
   'offset',
   'innerRef',
@@ -314,13 +320,13 @@ class TooltipPopoverWrapper extends Component<
       innerClassName,
       isOpen,
       hideArrow,
-      boundariesElement,
+      boundary,
       placement,
       placementPrefix,
       arrowClassName,
-      popperClassName,
+      floatingClassName,
       container,
-      modifiers,
+      middleware,
       strategy,
       offset,
       fade,
@@ -329,18 +335,18 @@ class TooltipPopoverWrapper extends Component<
     } = this.props;
 
     return (
-      <PopperContent
+      <FloatingContent
         className={className}
         target={target}
         isOpen={isOpen}
         hideArrow={hideArrow}
-        boundariesElement={boundariesElement}
+        boundary={boundary}
         placement={placement}
         placementPrefix={placementPrefix}
         arrowClassName={arrowClassName}
-        popperClassName={mapToCssModules(popperClassName, cssModule)}
+        floatingClassName={mapToCssModules(floatingClassName, cssModule)}
         container={container}
-        modifiers={modifiers}
+        middleware={middleware}
         strategy={strategy}
         offset={offset}
         cssModule={cssModule}
@@ -363,7 +369,7 @@ class TooltipPopoverWrapper extends Component<
             {typeof children === 'function' ? children({ update }) : children}
           </div>
         )}
-      </PopperContent>
+      </FloatingContent>
     );
   }
 }

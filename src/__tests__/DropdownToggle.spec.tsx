@@ -4,8 +4,6 @@ import type { DropdownContextValue } from '../DropdownContext';
 import { DropdownToggle } from '..';
 import { customDropdownRender } from '../testUtils';
 
-vi.mock('../popper');
-
 describe('DropdownToggle', () => {
   const user = userEvent.setup();
   const contextProps = {

@@ -1,8 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from '..';
 
-vi.mock('../popper');
-
 describe('ButtonDropdown', () => {
   const toggle = () => {};
 
