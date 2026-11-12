@@ -1,6 +1,6 @@
 {
   "name": "@conventioncatcorp/reactstrap",
-  "version": "10.0.0",
+  "version": "11.0.0",
   "description": "React 19 components for Bootstrap 5 (ConventionCatCorp fork of reactstrap)",
   "type": "module",
   "main": "./dist/index.js",
