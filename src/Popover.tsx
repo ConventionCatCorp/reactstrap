@@ -10,7 +10,7 @@ export interface PopoverProps extends TooltipPopoverWrapperProps {
   /** @default 'bs-popover' */
   placementPrefix?: string;
   /** @default 'click' */
-  trigger?: string;
+  trigger?: TooltipPopoverWrapperProps['trigger'];
   /** @default 8 */
   offset?: TooltipPopoverWrapperProps['offset'];
   /** The underlying `TooltipPopoverWrapper` instance. */

@@ -12,7 +12,7 @@ export interface ListOwnProps {
   /** Change underlying component's CSS base class name */
   cssModule?: CSSModule;
   /** Type of list `unstyled` or `inline` */
-  type?: string;
+  type?: 'unstyled' | 'inline';
 }
 
 export type ListProps<T extends ElementType = 'ul'> = ListOwnProps &

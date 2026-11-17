@@ -12,6 +12,8 @@ import { DropdownContext } from './DropdownContext';
 import {
   mapToCssModules,
   type CSSModule,
+  type Size,
+  type ThemeColor,
   type PolymorphicClassExtras,
 } from './utils';
 import Button from './Button';
@@ -20,14 +22,14 @@ export interface DropdownToggleOwnProps {
   /** Render as `.dropdown-toggle` (with caret). */
   caret?: boolean;
   /** Button color, when rendered as the default `Button`. @default 'secondary' */
-  color?: string;
+  color?: ThemeColor | 'link';
   className?: string;
   cssModule?: CSSModule;
   disabled?: boolean;
   /** Forwarded to `Button`. */
   outline?: boolean;
   /** Forwarded to `Button`. */
-  size?: string;
+  size?: Size;
   /** @default true */
   'aria-haspopup'?: boolean;
   /** Render as `.dropdown-toggle-split`. */

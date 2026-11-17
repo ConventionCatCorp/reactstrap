@@ -3,19 +3,20 @@ import classNames from 'classnames';
 import {
   mapToCssModules,
   type CSSModule,
+  type ThemeColor,
   type PolymorphicExtras,
 } from './utils';
 import { getColumnClasses, type ColumnSizeProps } from './Col';
 
 export interface PlaceholderOwnProps extends ColumnSizeProps {
   /** Add custom color to the placeholder */
-  color?: string;
+  color?: ThemeColor;
   /** Apply either `glow` or `wave` animation. */
-  animation?: string;
+  animation?: 'glow' | 'wave';
   className?: string;
   cssModule?: CSSModule;
   /** Make the size larger or smaller: `lg`, `sm` or `xs` */
-  size?: string;
+  size?: 'xs' | 'sm' | 'lg';
   innerRef?: Ref<any>;
 }
 

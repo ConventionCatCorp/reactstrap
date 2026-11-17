@@ -8,6 +8,7 @@ import {
   type ReactNode,
   type Ref,
   type SyntheticEvent,
+  type AriaRole,
 } from 'react';
 import { createPortal } from 'react-dom';
 import classNames from 'classnames';
@@ -67,7 +68,7 @@ export interface OffcanvasProps extends HTMLAttributes<HTMLDivElement> {
   /** Returns focus to the element that triggered opening of the offcanvas */
   returnFocusAfterClose?: boolean;
   /** Accessibility role */
-  role?: string;
+  role?: AriaRole;
   /** Allow body scrolling while open */
   scrollable?: boolean;
   /** Function to toggle offcanvas visibility */

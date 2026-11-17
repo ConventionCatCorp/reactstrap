@@ -280,13 +280,13 @@ describe('Modal', () => {
 
   it('should render with the class "modal-${size}" when size is passed', () => {
     render(
-      <Modal isOpen toggle={toggle} size="crazy">
+      <Modal isOpen toggle={toggle} size="xl">
         Yo!
       </Modal>,
     );
 
     expect(document.getElementsByClassName('modal-dialog').length).toBe(1);
-    expect(document.getElementsByClassName('modal-crazy').length).toBe(1);
+    expect(document.getElementsByClassName('modal-xl').length).toBe(1);
   });
 
   it('should render modal when isOpen is true', () => {

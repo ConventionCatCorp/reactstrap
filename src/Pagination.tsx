@@ -1,6 +1,6 @@
 import type { ComponentPropsWithRef, ElementType } from 'react';
 import classNames from 'classnames';
-import { mapToCssModules, type CSSModule } from './utils';
+import { mapToCssModules, type CSSModule, type Size } from './utils';
 
 export interface PaginationOwnProps {
   /** Add custom class */
@@ -10,7 +10,7 @@ export interface PaginationOwnProps {
   /** Change underlying component's CSS base class name */
   cssModule?: CSSModule;
   /** Make the Pagination bigger or smaller (`pagination-${size}`) */
-  size?: string;
+  size?: Size;
   /** Set a custom element for this component */
   tag?: ElementType;
   'aria-label'?: string;

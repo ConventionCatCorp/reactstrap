@@ -4,6 +4,7 @@ import { getColumnClasses, type ColumnSizeProps } from './Col';
 import {
   mapToCssModules,
   type CSSModule,
+  type Size,
   type PolymorphicExtras,
 } from './utils';
 
@@ -14,7 +15,7 @@ export interface LabelOwnProps extends ColumnSizeProps {
   /** Label for a checkbox/radio (`.form-check-label`) */
   check?: boolean;
   /** Horizontal form label size (`col-form-label-${size}`) */
-  size?: string;
+  size?: Size;
   /** Alias of `htmlFor` */
   for?: string;
   cssModule?: CSSModule;

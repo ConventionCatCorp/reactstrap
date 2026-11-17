@@ -9,14 +9,16 @@ import {
 
 const colWidths = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'];
 
+/** Column span: a number of columns, `auto`, or a custom value. */
+export type ColumnSize = number | 'auto' | (string & {});
+
 export type ColumnProps =
-  | string
+  | ColumnSize
   | boolean
-  | number
   | {
-      size?: boolean | number | string;
+      size?: boolean | ColumnSize;
       offset?: string | number;
-      order?: string | number;
+      order?: number | 'first' | 'last' | (string & {});
     };
 
 /** Breakpoint column props shared by `Col`, `Placeholder` and `PlaceholderButton`. */

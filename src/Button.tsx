@@ -3,6 +3,8 @@ import classNames from 'classnames';
 import {
   mapToCssModules,
   type CSSModule,
+  type Size,
+  type ThemeColor,
   type PolymorphicExtras,
 } from './utils';
 import CloseButton from './CloseButton';
@@ -19,7 +21,7 @@ export interface ButtonOwnProps {
   /** Use the button as a close button */
   close?: boolean;
   /** Change color of Button to one of the available colors */
-  color?: string;
+  color?: ThemeColor | 'link';
   /** Disables the button */
   disabled?: boolean;
   /** Renders an `<a>` when `tag` is left as `button` */
@@ -30,7 +32,7 @@ export interface ButtonOwnProps {
   /** Adds outline to the button */
   outline?: boolean;
   /** Make the button bigger or smaller */
-  size?: string;
+  size?: Size;
 }
 
 export type ButtonProps<T extends ElementType = 'button'> = ButtonOwnProps &

@@ -19,6 +19,7 @@ import {
   mapToCssModules,
   omit,
   type CSSModule,
+  type Trigger,
   type Target,
 } from './utils';
 
@@ -61,7 +62,7 @@ export interface TooltipPopoverWrapperProps extends Omit<
   offset?: OffsetOptions;
   innerRef?: Ref<HTMLElement>;
   /** Space separated: `click`, `hover`, `focus`, `legacy` or `manual`. */
-  trigger?: string;
+  trigger?: Trigger;
   fade?: boolean;
   flip?: boolean;
 }

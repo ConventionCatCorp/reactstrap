@@ -9,6 +9,7 @@ import {
   type ReactNode,
   type Ref,
   type SyntheticEvent,
+  type AriaRole,
 } from 'react';
 import { createPortal } from 'react-dom';
 import classNames from 'classnames';
@@ -52,7 +53,7 @@ export interface ModalProps extends HTMLAttributes<HTMLDivElement> {
   /** Enable/Disable animation */
   fade?: boolean;
   /** Make the modal fullscreen, optionally only below a breakpoint */
-  fullscreen?: boolean | 'sm' | 'md' | 'lg' | 'xl';
+  fullscreen?: boolean | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
   /** Ref to the `.modal` element */
   innerRef?: Ref<HTMLElement>;
   /** The status of the modal, either open or close */
@@ -76,11 +77,11 @@ export interface ModalProps extends HTMLAttributes<HTMLDivElement> {
   /** Returns focus to the element that triggered opening of the modal */
   returnFocusAfterClose?: boolean;
   /** Accessibility role */
-  role?: string;
+  role?: AriaRole;
   /** Make the modal scrollable */
   scrollable?: boolean;
   /** Two optional sizes `lg` and `sm` */
-  size?: string;
+  size?: 'sm' | 'lg' | 'xl';
   /** Function to toggle modal visibility */
   toggle?: KeyboardEventHandler<any> | MouseEventHandler<any>;
   /** Keep focus inside the modal */

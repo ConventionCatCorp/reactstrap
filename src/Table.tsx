@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import {
   mapToCssModules,
   type CSSModule,
+  type Breakpoint,
   type PolymorphicExtras,
 } from './utils';
 
@@ -20,11 +21,11 @@ export interface TableOwnProps {
   hover?: boolean;
   innerRef?: Ref<any>;
   /** Responsive tables allow tables to be scrolled horizontally with ease; pass a breakpoint (e.g. `md`) to limit it */
-  responsive?: boolean | string;
+  responsive?: boolean | Breakpoint;
   /** Element wrapping the table when `responsive` is set */
   responsiveTag?: ElementType;
   /** Make tables more compact by cutting cell padding in half when setting size as sm. */
-  size?: string;
+  size?: 'sm';
   /** Adds zebra-striping to any table row within the `<tbody>` */
   striped?: boolean;
 }

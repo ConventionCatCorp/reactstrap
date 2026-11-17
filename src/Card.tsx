@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import {
   mapToCssModules,
   type CSSModule,
+  type ThemeColor,
   type PolymorphicExtras,
 } from './utils';
 
@@ -12,7 +13,7 @@ export interface CardOwnProps {
   /** Add custom class */
   className?: string;
   /** Change background color of component */
-  color?: string;
+  color?: ThemeColor;
   /** Change underlying component's CSS base class name */
   cssModule?: CSSModule;
   innerRef?: Ref<any>;

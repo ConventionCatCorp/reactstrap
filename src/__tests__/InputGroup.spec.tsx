@@ -29,9 +29,9 @@ describe('InputGroup', () => {
   });
 
   it('should render with "input-group-${size}" class when size is passed', () => {
-    render(<InputGroup size="whatever">Yo!</InputGroup>);
+    render(<InputGroup size="lg">Yo!</InputGroup>);
 
-    expect(screen.getByText(/yo!/i)).toHaveClass('input-group-whatever');
+    expect(screen.getByText(/yo!/i)).toHaveClass('input-group-lg');
   });
 
   it('should render additional classes', () => {

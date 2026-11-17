@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import {
   mapToCssModules,
   type CSSModule,
+  type ThemeColor,
   type PolymorphicExtras,
 } from './utils';
 
@@ -10,7 +11,7 @@ export interface BadgeOwnProps {
   /** Add custom class */
   className?: string;
   /** Change background color of Badge */
-  color?: string;
+  color?: ThemeColor;
   /** Change existing className with a new className */
   cssModule?: CSSModule;
   /** Renders an `<a>` when `tag` is left as `span` */

@@ -8,7 +8,7 @@ import {
 
 const rowColWidths = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'];
 
-type RowCols = number | string;
+type RowCols = number | 'auto' | (string & {});
 
 export interface RowOwnProps {
   className?: string;
