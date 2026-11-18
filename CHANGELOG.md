@@ -1,3 +1,19 @@
+# 11.1.0 (2026-11-17)
+
+Props that map to a fixed set of Bootstrap classes are typed as string unions instead of `string`. Runtime output is
+unchanged; code passing a typo or a plain `string` variable now fails to type-check (narrow it, e.g. `size={s as Size}`).
+
+- Closed unions: `size` (`Size` = `'sm' | 'lg'` on `Button`, `DropdownToggle`, `ButtonGroup`, `Dropdown`, `InputGroup`,
+  `Pagination`, `Label`; `Modal` adds `'xl'`; `Table` and `Spinner` are `'sm'`; `Placeholder` is `'xs' | 'sm' | 'lg'`),
+  `Spinner.type`, `Placeholder.animation`, `Navbar.fixed`/`sticky`, `Nav.horizontal`, `List.type`, and `trigger` on
+  `Tooltip`/`Popover` (`Trigger`: up to three space-separated `TriggerEvent`s).
+- Open unions (autocomplete, any string still accepted for custom `$theme-colors` / `$grid-breakpoints`): `ThemeColor`
+  on `color` props, `boolean | Breakpoint` on `Navbar.expand`, `Nav.vertical`, `ListGroup.horizontal`,
+  `Table.responsive`, `Container.fluid`; `Row`/`Col` sizes accept `'auto'`, `Col` order `'first' | 'last'`.
+- `role` on `Modal`, `Offcanvas`, `ButtonGroup`, `ButtonToolbar` is React's `AriaRole`.
+- `Modal.fullscreen` accepts `'xxl'`.
+- New exports: `ThemeColor`, `Breakpoint`, `Size`, `Trigger`, `TriggerEvent`.
+
 # 11.0.0 (2026-11-11)
 
 Positioning moves from `@popperjs/core` (unmaintained since 2023) to [Floating UI](https://floating-ui.com/)
