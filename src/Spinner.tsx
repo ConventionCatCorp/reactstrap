@@ -3,16 +3,17 @@ import classNames from 'classnames';
 import {
   mapToCssModules,
   type CSSModule,
+  type ThemeColor,
   type PolymorphicExtras,
 } from './utils';
 
 export interface SpinnerOwnProps {
   /** Change animation of spinner: `border` or `grow` */
-  type?: string;
+  type?: 'border' | 'grow';
   /** Change size of spinner (`sm`) */
-  size?: string;
+  size?: 'sm';
   /** Change color of spinner (`primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, `dark`) */
-  color?: string;
+  color?: ThemeColor;
   /** Add custom class */
   className?: string;
   /** Change existing className with a new className */

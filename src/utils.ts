@@ -15,6 +15,37 @@ export type Tag = ElementType;
 export type Target =
   string | Element | RefObject<Element | null> | (() => Element | null);
 
+/**
+ * Bootstrap theme color. Open-ended (`string & {}`) so colors added to `$theme-colors` still
+ * type-check while the defaults autocomplete.
+ */
+export type ThemeColor =
+  | 'primary'
+  | 'secondary'
+  | 'success'
+  | 'danger'
+  | 'warning'
+  | 'info'
+  | 'light'
+  | 'dark'
+  | (string & {});
+
+/** Grid breakpoint. Open-ended so custom `$grid-breakpoints` (and `widths`) still type-check. */
+export type Breakpoint =
+  'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | (string & {});
+
+/** Component size modifier shared by buttons, input groups, pagination and form labels. */
+export type Size = 'sm' | 'lg';
+
+/** Event that opens a tooltip/popover. */
+export type TriggerEvent = 'click' | 'hover' | 'focus' | 'legacy' | 'manual';
+
+/** Space-separated combination of up to three `TriggerEvent`s, e.g. `'hover focus'`. */
+export type Trigger =
+  | TriggerEvent
+  | `${TriggerEvent} ${TriggerEvent}`
+  | `${TriggerEvent} ${TriggerEvent} ${TriggerEvent}`;
+
 /** Ref forwarded to the rendered DOM node. */
 export type InnerRef<T = HTMLElement> = Ref<T>;
 

@@ -1,4 +1,4 @@
-import type { ElementType } from 'react';
+import type { ElementType, AriaRole } from 'react';
 import classNames from 'classnames';
 import {
   mapToCssModules,
@@ -14,7 +14,7 @@ export interface ButtonToolbarOwnProps {
   /** Change existing className with a new className */
   cssModule?: CSSModule;
   /** In order for assistive technologies (such as screen readers) to convey that a series of buttons is grouped, an appropriate role attribute needs to be provided. For button groups, this would be role="group", while toolbars should have a role="toolbar". */
-  role?: string;
+  role?: AriaRole;
 }
 
 export type ButtonToolbarProps<T extends ElementType = 'div'> =

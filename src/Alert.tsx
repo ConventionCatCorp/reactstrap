@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import {
   mapToCssModules,
   type CSSModule,
+  type ThemeColor,
   type PolymorphicExtras,
 } from './utils';
 import Fade, { type FadeProps } from './Fade';
@@ -17,7 +18,7 @@ export interface AlertOwnProps {
   /** Aria label for close button */
   closeAriaLabel?: string;
   /** Change color of alert */
-  color?: string;
+  color?: ThemeColor;
   /** Change existing className with a new className */
   cssModule?: CSSModule;
   /** Toggle fade animation */

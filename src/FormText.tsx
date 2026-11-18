@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import {
   mapToCssModules,
   type CSSModule,
+  type ThemeColor,
   type PolymorphicExtras,
 } from './utils';
 
@@ -11,7 +12,7 @@ export interface FormTextOwnProps {
   /** Omit the `.form-text` class */
   inline?: boolean;
   /** Text color (`text-${color}`); empty string for none */
-  color?: string;
+  color?: ThemeColor | 'muted' | 'body' | 'white' | '';
   cssModule?: CSSModule;
 }
 

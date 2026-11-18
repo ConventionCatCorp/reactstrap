@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import {
   mapToCssModules,
   type CSSModule,
+  type Breakpoint,
   type PolymorphicExtras,
 } from './utils';
 
@@ -14,7 +15,7 @@ export interface ListGroupOwnProps {
   /** Remove borders to make the list appear flush */
   flush?: boolean;
   /** Make the list horizontal instead of vertical; pass a breakpoint (e.g. `md`) to make it responsive */
-  horizontal?: boolean | string;
+  horizontal?: boolean | Breakpoint;
   /** Add number to the ListItems */
   numbered?: boolean;
 }

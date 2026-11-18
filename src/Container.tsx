@@ -3,12 +3,13 @@ import classNames from 'classnames';
 import {
   mapToCssModules,
   type CSSModule,
+  type Breakpoint,
   type PolymorphicExtras,
 } from './utils';
 
 export interface ContainerOwnProps {
   /** `true` for `.container-fluid`, or a breakpoint (e.g. `md`) for `.container-md` */
-  fluid?: boolean | string;
+  fluid?: boolean | Breakpoint;
   className?: string;
   cssModule?: CSSModule;
 }

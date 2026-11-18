@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import {
   mapToCssModules,
   type CSSModule,
+  type Breakpoint,
   type PolymorphicExtras,
 } from './utils';
 
@@ -16,7 +17,7 @@ export interface NavOwnProps {
   /** fills the nav to extend to full available width */
   fill?: boolean;
   /** Change the horizontal alignment of your nav (`justify-content-${horizontal}`), e.g. `center`, `end` */
-  horizontal?: string;
+  horizontal?: 'start' | 'end' | 'center' | 'between' | 'around' | 'evenly';
   /** All horizontal space will be occupied by nav links, but unlike the `fill` above, every nav item will be the same width. */
   justified?: boolean;
   /** Add navbar for a full-height and lightweight navigation */
@@ -26,7 +27,7 @@ export interface NavOwnProps {
   /** Make NavItems look like tabs */
   tabs?: boolean;
   /** Stack your navigation by changing the flex item direction; a breakpoint string makes it responsive */
-  vertical?: boolean | string;
+  vertical?: boolean | Breakpoint;
 }
 
 export type NavProps<T extends ElementType = 'ul'> = NavOwnProps &

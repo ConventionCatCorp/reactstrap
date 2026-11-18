@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import {
   mapToCssModules,
   type CSSModule,
+  type ThemeColor,
   type PolymorphicExtras,
 } from './utils';
 
@@ -16,7 +17,7 @@ export interface ListGroupItemOwnProps {
   /** Change underlying component's CSS base class name */
   cssModule?: CSSModule;
   /** Add background colour to the list item */
-  color?: string;
+  color?: ThemeColor;
   /** Make the list item appear disabled (also swallows clicks) */
   disabled?: boolean;
   href?: string;

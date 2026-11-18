@@ -217,5 +217,15 @@ export type {
   TransitionStatus,
   TransitionTimeout,
 } from './Transition';
-export type { CSSModule, InnerRef, Tag, Target } from './utils';
+export type {
+  Breakpoint,
+  CSSModule,
+  InnerRef,
+  Size,
+  Tag,
+  Target,
+  ThemeColor,
+  Trigger,
+  TriggerEvent,
+} from './utils';
 export * as Util from './utils';

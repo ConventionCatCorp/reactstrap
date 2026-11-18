@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import {
   mapToCssModules,
   type CSSModule,
+  type Size,
   type PolymorphicExtras,
 } from './utils';
 import Dropdown, { type DropdownProps } from './Dropdown';
@@ -14,7 +15,7 @@ export interface InputGroupOwnProps {
   /** Change underlying component's CSS base class name */
   cssModule?: CSSModule;
   /** Sets size of InputGroup */
-  size?: string;
+  size?: Size;
   /** Only `'dropdown'` is meaningful (see `InputGroupDropdownProps`) */
   type?: undefined;
 }

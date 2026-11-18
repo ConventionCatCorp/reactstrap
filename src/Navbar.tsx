@@ -3,6 +3,8 @@ import classNames from 'classnames';
 import {
   mapToCssModules,
   type CSSModule,
+  type Breakpoint,
+  type ThemeColor,
   type PolymorphicExtras,
 } from './utils';
 
@@ -11,7 +13,7 @@ export interface NavbarOwnProps {
   /** Add custom class */
   className?: string;
   /** Theme the navbar by adding a background color */
-  color?: string;
+  color?: ThemeColor;
   /** Use any of the responsive containers to change how wide the content in your navbar is presented. */
   container?: boolean | 'fluid' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
   /** Change underlying component's CSS base class name */
@@ -19,13 +21,13 @@ export interface NavbarOwnProps {
   /** This prop is passed if the background is dark, to make the text lighter */
   dark?: boolean;
   /** Breakpoint from which the navbar expands (`true` = always) */
-  expand?: boolean | string;
+  expand?: boolean | Breakpoint;
   /** Make the navbar fixed (`fixed-${fixed}`), e.g. `top`, `bottom` */
-  fixed?: string;
+  fixed?: 'top' | 'bottom';
   /** Add `.navbar-light` class */
   light?: boolean;
   /** Use `position: sticky` (`sticky-${sticky}`), e.g. `top` */
-  sticky?: string;
+  sticky?: 'top' | 'bottom';
 }
 
 export type NavbarProps<T extends ElementType = 'nav'> = NavbarOwnProps &

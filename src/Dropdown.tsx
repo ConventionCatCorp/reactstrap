@@ -26,6 +26,7 @@ import {
   mapToCssModules,
   omit,
   type CSSModule,
+  type Size,
   type PolymorphicClassExtras,
 } from './utils';
 
@@ -43,7 +44,7 @@ export interface DropdownOwnProps {
   /** Add `.active` when `nav`. */
   active?: boolean;
   /** Adds `.btn-group-${size}`. */
-  size?: string;
+  size?: Size;
   /** Called to open or close the menu. */
   toggle?: KeyboardEventHandler<any> | MouseEventHandler<any>;
   children?: ReactNode;

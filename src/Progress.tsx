@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import {
   mapToCssModules,
   type CSSModule,
+  type ThemeColor,
   type PolymorphicExtras,
 } from './utils';
 
@@ -21,7 +22,7 @@ export interface ProgressOwnProps {
   /** Change underlying component's CSS base class name */
   cssModule?: CSSModule;
   /** Add custom color to the progress bar */
-  color?: string;
+  color?: ThemeColor;
   /** Maximum value of progress */
   max?: string | number;
   /** Minimum value of progress, defaults to zero */
