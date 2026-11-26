@@ -24,9 +24,9 @@ describe('Carousel', () => {
     userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
 
   const items = [
-    { src: '', altText: 'a', caption: 'caption 1' },
-    { src: '', altText: 'b', caption: 'caption 2' },
-    { src: '', altText: 'c', caption: 'caption 3' },
+    { src: 'slide.png', altText: 'a', caption: 'caption 1' },
+    { src: 'slide.png', altText: 'b', caption: 'caption 2' },
+    { src: 'slide.png', altText: 'c', caption: 'caption 3' },
   ];
 
   const slides = items.map((item, idx) => {
@@ -399,9 +399,9 @@ describe('Carousel', () => {
 
   describe('carouseling', () => {
     const carouselItems = [
-      { src: '', altText: 'a', caption: 'Grogu' },
-      { src: '', altText: 'b', caption: 'Boba Fett' },
-      { src: '', altText: 'c', caption: 'The Mandalorian' },
+      { src: 'slide.png', altText: 'a', caption: 'Grogu' },
+      { src: 'slide.png', altText: 'b', caption: 'Boba Fett' },
+      { src: 'slide.png', altText: 'c', caption: 'The Mandalorian' },
     ];
 
     const carouselSlides = carouselItems.map((item, idx) => {

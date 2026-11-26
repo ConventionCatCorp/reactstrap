@@ -10,6 +10,8 @@ export default {
     // vite.config.ts is the library build; keep its plugins, drop lib mode.
     delete config.build?.lib;
     delete config.build?.rolldownOptions?.output;
+    // Storybook's own preview/blocks bundles exceed 500 kB; docs are only served locally.
+    config.build = { ...config.build, chunkSizeWarningLimit: 1500 };
     config.resolve = {
       ...config.resolve,
       alias: {

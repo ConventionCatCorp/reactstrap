@@ -46,7 +46,7 @@ describe('Toast', () => {
   });
 
   it('should support custom tag', () => {
-    testForCustomTag(Toast, 'p');
+    testForCustomTag(Toast, {}, 'p');
   });
 
   it('should be empty if not isOpen', () => {

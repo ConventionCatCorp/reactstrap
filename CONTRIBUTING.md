@@ -33,9 +33,3 @@ If you wish to submit a pull request for a new feature or issue, you should star
 - Components are TypeScript; their exported `XProps` are the public types (no separate `types/` folder).
 - All components must have a story in `stories/`.
 - Make sure `npm run lint`, `npm run typecheck`, `npm run format:check` and `npm run test:ci` pass before submitting the PR
-
-## Resources
-
-- [Codepen Demo](http://codepen.io/eddywashere/pen/ZOjmkm)
-- [Ask Stackoverflow](http://stackoverflow.com/questions/ask?tags=reactstrap+react)
-  - [View Stackoverflow reactstrap tag](http://stackoverflow.com/questions/tagged/reactstrap)

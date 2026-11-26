@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ButtonToggle } from '..';
 import { testForChildrenInComponent } from '../testUtils';
@@ -54,7 +54,7 @@ describe('ButtonToggle', () => {
       const onFocus = vi.fn();
       render(<ButtonToggle onFocus={onFocus}>Testing Click</ButtonToggle>);
 
-      screen.getByText(/testing click/i).focus();
+      act(() => screen.getByText(/testing click/i).focus());
       expect(onFocus).toHaveBeenCalled();
     });
   });
@@ -63,8 +63,8 @@ describe('ButtonToggle', () => {
     it('calls props.onBlur if it exists', () => {
       const onBlur = vi.fn();
       render(<ButtonToggle onBlur={onBlur}>Testing Click</ButtonToggle>);
-      screen.getByText(/testing click/i).focus();
-      screen.getByText(/testing click/i).blur();
+      act(() => screen.getByText(/testing click/i).focus());
+      act(() => screen.getByText(/testing click/i).blur());
       expect(onBlur).toHaveBeenCalled();
     });
   });

@@ -4,19 +4,19 @@ import UncontrolledCarousel from '../UncontrolledCarousel';
 
 const items = [
   {
-    src: '',
+    src: 'slide.png',
     altText: 'a',
     caption: 'caption 1',
     key: '1',
   },
   {
-    src: '',
+    src: 'slide.png',
     altText: 'b',
     caption: 'caption 2',
     key: '2',
   },
   {
-    src: '',
+    src: 'slide.png',
     altText: 'c',
     caption: 'caption 3',
     key: '3',

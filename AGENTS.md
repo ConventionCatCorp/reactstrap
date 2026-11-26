@@ -41,6 +41,7 @@ CI (`.github/workflows/ci.yml`) runs lint, format:check, typecheck, cover, build
 - `src/*Context.ts` — typed React contexts.
 - `src/__tests__/*.spec.tsx` — Vitest specs; `typings.tsx` and `polymorphic.*.tsx` are compile-only type tests.
 - `src/__tests__/setup.ts` spies `useFloating` (real implementation); assert options with `lastFloating()` / `middleware(name)` from `src/testUtils.tsx`.
+  It also runs `computePosition`'s callback inside `act` (hence `@floating-ui/react-dom` in `server.deps.inline`).
 - `stories/` — Storybook docs; `@conventioncatcorp/reactstrap` resolves to `src/index.ts` (tsconfig `paths` + Storybook alias).
 
 ## Conventions
@@ -57,11 +58,17 @@ PolymorphicExtras<XOwnProps, T>` (spell `XOwnProps` out, or Storybook docgen los
 - Use `import type` for types (`verbatimModuleSyntax`). Named React imports, no `import React` unless needed.
 - Class names go through `mapToCssModules(classNames(...), cssModule)`.
 - Bootstrap 5 only: don't add Bootstrap 4 classes/props back.
+- Workflow actions are pinned: full version (`@v7.1.0`) if the release is immutable, else commit SHA + `# vX.Y.Z`
+  comment (Dependabot keeps both updated). Check with `gh api repos/<owner>/<repo>/releases --jq '.[].immutable'`.
 - Commits: Conventional Commits. Releases are published locally (`npm version` + `npm publish`, see README); no CI release.
 
 ## Gotchas
 
 - `tsc` has no JS API in TS 7: tools needing the TS compiler API (e.g. vite-plugin-dts, react-docgen-typescript) won't work.
   Declarations come from `tsc`; Storybook uses `react-docgen`.
+- Specs must leave stderr clean (no act/React warnings). Vitest's agent reporter hides console output of passing tests:
+  check with `npm run cover -- --reporter=default`. Assert intentional `warnOnce` output with a `console.error` spy.
 - Fake timers + user-event: `userEvent.setup({ advanceTimers: vi.advanceTimersByTime })` and wrap timer advances in `act`.
 - `npm run typecheck` covers tests and stories too — they must compile.
+- `.npmrc` sets `min-release-age=3`: `npm install`/`npm update` won't resolve versions published <3 days ago (Dependabot
+  `cooldown` mirrors it). Don't bypass it to grab a fresh release.

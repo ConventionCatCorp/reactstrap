@@ -54,13 +54,23 @@ describe('Input', () => {
   });
 
   it('should not render children', () => {
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
     render(<Input>Yo!</Input>);
     expect(screen.queryByText('Yo!')).not.toBeInTheDocument();
+    expect(spy).toHaveBeenCalledWith(
+      'Input with a type of "text" cannot have children. Please use "value"/"defaultValue" instead.',
+    );
+    spy.mockRestore();
   });
 
   it('should render without children when type is "textarea"', () => {
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
     render(<Input type="textarea">Yo!</Input>);
     expect(screen.queryByText('Yo!')).not.toBeInTheDocument();
+    expect(spy).toHaveBeenCalledWith(
+      'Input with a type of "textarea" cannot have children. Please use "value"/"defaultValue" instead.',
+    );
+    spy.mockRestore();
   });
 
   it('should render children when type is select', () => {
