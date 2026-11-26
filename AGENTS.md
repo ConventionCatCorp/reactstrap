@@ -65,3 +65,5 @@ PolymorphicExtras<XOwnProps, T>` (spell `XOwnProps` out, or Storybook docgen los
   Declarations come from `tsc`; Storybook uses `react-docgen`.
 - Fake timers + user-event: `userEvent.setup({ advanceTimers: vi.advanceTimersByTime })` and wrap timer advances in `act`.
 - `npm run typecheck` covers tests and stories too — they must compile.
+- `.npmrc` sets `min-release-age=3`: `npm install`/`npm update` won't resolve versions published <3 days ago (Dependabot
+  `cooldown` mirrors it). Don't bypass it to grab a fresh release.

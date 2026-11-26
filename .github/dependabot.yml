@@ -4,12 +4,25 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 3
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
     groups:
-      storybook:
-        patterns: ['storybook', '@storybook/*']
-      testing:
-        patterns: ['vitest', '@vitest/*', '@testing-library/*', 'jsdom']
+      npm:
+        patterns: ['*']
+        update-types: ['minor', 'patch']
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 3
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
+    groups:
+      github-actions:
+        patterns: ['*']
+        update-types: ['minor', 'patch']
