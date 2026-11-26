@@ -57,6 +57,8 @@ PolymorphicExtras<XOwnProps, T>` (spell `XOwnProps` out, or Storybook docgen los
 - Use `import type` for types (`verbatimModuleSyntax`). Named React imports, no `import React` unless needed.
 - Class names go through `mapToCssModules(classNames(...), cssModule)`.
 - Bootstrap 5 only: don't add Bootstrap 4 classes/props back.
+- Workflow actions are pinned: full version (`@v7.1.0`) if the release is immutable, else commit SHA + `# vX.Y.Z`
+  comment (Dependabot keeps both updated). Check with `gh api repos/<owner>/<repo>/releases --jq '.[].immutable'`.
 - Commits: Conventional Commits. Releases are published locally (`npm version` + `npm publish`, see README); no CI release.
 
 ## Gotchas
