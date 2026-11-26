@@ -26,6 +26,8 @@ export default defineConfig({
     globals: true,
     setupFiles: ['src/__tests__/setup.ts'],
     clearMocks: true,
+    // Inlined so the `@floating-ui/dom` mock in setup.ts reaches its import of computePosition.
+    server: { deps: { inline: ['@floating-ui/react-dom'] } },
     include: ['src/**/*.spec.{ts,tsx}'],
     coverage: {
       reporter: ['text', 'lcov'],
