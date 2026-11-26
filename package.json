@@ -300,5 +300,9 @@
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
+  },
+  "allowScripts": {
+    "esbuild": false,
+    "fsevents": false
   }
 }
